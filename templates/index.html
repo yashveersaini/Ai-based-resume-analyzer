@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ResumeIQ — ATS Analyzer</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="wrapper">
+
+    <header>
+      <div class="logo-badge"><span></span> AI-Powered Resume Analysis</div>
+      <h1>Resume<em>IQ</em></h1>
+      <p class="subtitle">Upload your resume and a job description to get your ATS compatibility score with intelligent skill matching.</p>
+    </header>
+
+    <div class="tab-strip">
+      <button class="tab-btn active">ATS Score</button>
+      <button class="tab-btn" disabled title="Coming soon">Job Suggest</button>
+    </div>
+
+    <!-- Upload Card -->
+    <div class="card">
+      <div class="card-title">Upload Resume</div>
+      <div class="upload-zone" id="uploadZone">
+        <input type="file" id="resumeInput" accept=".pdf" />
+        <div class="upload-icon">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+          </svg>
+        </div>
+        <div class="upload-text">Drop your PDF here</div>
+        <div class="upload-hint">or click to browse — max 5MB</div>
+        <div class="upload-file-name" id="fileName">— no file selected —</div>
+      </div>
+    </div>
+
+    <!-- Job Description Card -->
+    <div class="card">
+      <div class="card-title">Job Description</div>
+      <textarea id="jobDesc" placeholder="Paste the full job description here. Include required skills, responsibilities, and qualifications for the most accurate analysis..."></textarea>
+    </div>
+
+    <!-- Error Box -->
+    <div class="error-box" id="errorBox"></div>
+
+    <!-- Analyze Button -->
+    <button class="btn-analyze" id="analyzeBtn" onclick="analyzeResume()">
+      Analyze Resume →
+    </button>
+
+    <!-- Loader -->
+    <div class="loader" id="loader">
+      <div class="loader-ring"></div>
+      <div class="loader-text">Analyzing with AI models...</div>
+    </div>
+
+    <!-- Results Section -->
+    <div id="results">
+
+      <!-- Score Card -->
+      <div class="card" style="margin-top: 32px;">
+        <div class="card-title">ATS Match Score</div>
+        <div class="score-container">
+          <div class="score-ring-wrap">
+            <svg viewBox="0 0 120 120">
+              <circle class="score-ring-bg" cx="60" cy="60" r="54"/>
+              <circle class="score-ring-fg" id="scoreRing" cx="60" cy="60" r="54"/>
+            </svg>
+            <div class="score-label">
+              <span class="score-num" id="scoreNum">0%</span>
+              <span class="score-pct">ATS Score</span>
+            </div>
+          </div>
+          <div class="score-info">
+            <div class="score-title" id="scoreTitle">—</div>
+            <div class="score-desc" id="scoreDesc">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Matched Skills -->
+      <div class="card">
+        <div class="card-title">✓ Matched Skills</div>
+        <div class="skills-grid" id="matchedSkills">
+          <div class="empty-state">No matched skills found.</div>
+        </div>
+      </div>
+
+      <!-- Missing Skills -->
+      <div class="card">
+        <div class="card-title">✗ Missing Skills</div>
+        <div class="skills-grid" id="missingSkills">
+          <div class="empty-state">No missing skills found.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
