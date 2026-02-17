@@ -1,0 +1,6 @@
+flask
+PyMuPDF           
+spacy            
+sentence-transformers  
+scikit-learn      
+torch             
