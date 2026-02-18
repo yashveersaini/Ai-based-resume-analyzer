@@ -5,8 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ResumeIQ — ATS Analyzer</title>
 
+  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 
+  <!-- External CSS via Flask url_for -->
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
@@ -15,93 +17,185 @@
     <header>
       <div class="logo-badge"><span></span> AI-Powered Resume Analysis</div>
       <h1>Resume<em>IQ</em></h1>
-      <p class="subtitle">Upload your resume and a job description to get your ATS compatibility score with intelligent skill matching.</p>
+      <p class="subtitle" id="headerSubtitle">Upload your resume and a job description to get your ATS compatibility score with intelligent skill matching.</p>
     </header>
 
+    <!-- Tab Strip -->
     <div class="tab-strip">
-      <button class="tab-btn active">ATS Score</button>
-      <button class="tab-btn" disabled title="Coming soon">Job Suggest</button>
+      <button class="tab-btn active" id="tab1Btn" onclick="switchTab(1)">ATS Score</button>
+      <button class="tab-btn"        id="tab2Btn" onclick="switchTab(2)">Job Suggest</button>
     </div>
 
-    <!-- Upload Card -->
-    <div class="card">
-      <div class="card-title">Upload Resume</div>
-      <div class="upload-zone" id="uploadZone">
-        <input type="file" id="resumeInput" accept=".pdf" />
-        <div class="upload-icon">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
-              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-          </svg>
-        </div>
-        <div class="upload-text">Drop your PDF here</div>
-        <div class="upload-hint">or click to browse — max 5MB</div>
-        <div class="upload-file-name" id="fileName">— no file selected —</div>
-      </div>
-    </div>
+    <!-- ═══════════════════════════════════════
+         FEATURE 1 — ATS Score
+    ═══════════════════════════════════════ -->
+    <div id="tab1">
 
-    <!-- Job Description Card -->
-    <div class="card">
-      <div class="card-title">Job Description</div>
-      <textarea id="jobDesc" placeholder="Paste the full job description here. Include required skills, responsibilities, and qualifications for the most accurate analysis..."></textarea>
-    </div>
-
-    <!-- Error Box -->
-    <div class="error-box" id="errorBox"></div>
-
-    <!-- Analyze Button -->
-    <button class="btn-analyze" id="analyzeBtn" onclick="analyzeResume()">
-      Analyze Resume →
-    </button>
-
-    <!-- Loader -->
-    <div class="loader" id="loader">
-      <div class="loader-ring"></div>
-      <div class="loader-text">Analyzing with AI models...</div>
-    </div>
-
-    <!-- Results Section -->
-    <div id="results">
-
-      <!-- Score Card -->
-      <div class="card" style="margin-top: 32px;">
-        <div class="card-title">ATS Match Score</div>
-        <div class="score-container">
-          <div class="score-ring-wrap">
-            <svg viewBox="0 0 120 120">
-              <circle class="score-ring-bg" cx="60" cy="60" r="54"/>
-              <circle class="score-ring-fg" id="scoreRing" cx="60" cy="60" r="54"/>
+      <div class="card">
+        <div class="card-title">Upload Resume</div>
+        <div class="upload-zone" id="uploadZone">
+          <input type="file" id="resumeInput" accept=".pdf" />
+          <div class="upload-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
             </svg>
-            <div class="score-label">
-              <span class="score-num" id="scoreNum">0%</span>
-              <span class="score-pct">ATS Score</span>
+          </div>
+          <div class="upload-text">Drop your PDF here</div>
+          <div class="upload-hint">or click to browse — max 5MB</div>
+          <div class="upload-file-name" id="fileName">— no file selected —</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Job Description</div>
+        <textarea id="jobDesc" placeholder="Paste the full job description here. Include required skills, responsibilities, and qualifications for the most accurate analysis..."></textarea>
+      </div>
+
+      <div class="error-box" id="errorBox"></div>
+
+      <button class="btn-analyze" id="analyzeBtn" onclick="analyzeResume()">
+        Analyze Resume →
+      </button>
+
+      <div class="loader" id="loader">
+        <div class="loader-ring"></div>
+        <div class="loader-text">Analyzing with AI models...</div>
+      </div>
+
+      <div id="results">
+        <div class="card" style="margin-top:32px;">
+          <div class="card-title">ATS Match Score</div>
+          <div class="score-container">
+            <div class="score-ring-wrap">
+              <svg viewBox="0 0 120 120">
+                <circle class="score-ring-bg" cx="60" cy="60" r="54"/>
+                <circle class="score-ring-fg" id="scoreRing" cx="60" cy="60" r="54"/>
+              </svg>
+              <div class="score-label">
+                <span class="score-num" id="scoreNum">0%</span>
+                <span class="score-pct">ATS Score</span>
+              </div>
+            </div>
+            <div class="score-info">
+              <div class="score-title" id="scoreTitle">—</div>
+              <div class="score-desc"  id="scoreDesc">—</div>
             </div>
           </div>
-          <div class="score-info">
-            <div class="score-title" id="scoreTitle">—</div>
-            <div class="score-desc" id="scoreDesc">—</div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">◈ Your Resume Skills</div>
+          <div class="skills-summary">
+            <div class="skills-summary-bar">
+              <div class="skills-summary-fill" id="skillsSummaryFill"></div>
+            </div>
+            <div class="skills-summary-label" id="skillsSummaryLabel"></div>
+          </div>
+          <div class="skills-legend" id="skillsLegend"></div>
+          <div class="skills-grid"   id="yourSkills">
+            <div class="empty-state">No skills detected in resume.</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">✓ Matched Skills</div>
+          <div class="skills-grid" id="matchedSkills">
+            <div class="empty-state">No matched skills found.</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">✗ Missing Skills</div>
+          <div class="skills-grid" id="missingSkills">
+            <div class="empty-state">No missing skills found.</div>
           </div>
         </div>
       </div>
 
-      <!-- Matched Skills -->
+    </div><!-- /#tab1 -->
+
+
+    <!-- ═══════════════════════════════════════
+         FEATURE 2 — Job Role Suggest
+    ═══════════════════════════════════════ -->
+    <div id="tab2" style="display:none;">
+
       <div class="card">
-        <div class="card-title">✓ Matched Skills</div>
-        <div class="skills-grid" id="matchedSkills">
-          <div class="empty-state">No matched skills found.</div>
+        <div class="card-title">Upload Resume</div>
+        <div class="upload-zone" id="uploadZone2">
+          <input type="file" id="resumeInput2" accept=".pdf" />
+          <div class="upload-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+            </svg>
+          </div>
+          <div class="upload-text">Drop your PDF here</div>
+          <div class="upload-hint">or click to browse — max 5MB</div>
+          <div class="upload-file-name" id="fileName2">— no file selected —</div>
         </div>
       </div>
 
-      <!-- Missing Skills -->
-      <div class="card">
-        <div class="card-title">✗ Missing Skills</div>
-        <div class="skills-grid" id="missingSkills">
-          <div class="empty-state">No missing skills found.</div>
+      <div class="error-box" id="errorBox2"></div>
+
+      <button class="btn-analyze" id="suggestBtn" onclick="suggestJobs()">
+        Suggest Job Roles →
+      </button>
+
+      <div class="loader" id="loader2">
+        <div class="loader-ring"></div>
+        <div class="loader-text">Predicting best roles for you...</div>
+      </div>
+
+      <!-- Job Results -->
+      <div id="jobResults">
+
+        <!-- Detected Skills -->
+        <div class="card">
+          <div class="card-title">◈ Detected Skills from Resume</div>
+          <div class="skills-grid" id="detectedSkills">
+            <div class="empty-state">No skills found.</div>
+          </div>
         </div>
+
+        <!-- Top 3 Role Cards -->
+        <div class="section-label">🏆 Top 3 Recommended Roles</div>
+        <div id="jobCards"></div>
+
+      </div>
+
+    </div><!-- /#tab2 -->
+
+  </div><!-- /.wrapper -->
+
+
+  <!-- ═══════════════════════════════════════
+       MODAL — Skills & Roadmap
+  ═══════════════════════════════════════ -->
+  <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+
+      <div class="modal-header">
+        <div class="modal-rank-badge" id="modalRankBadge"></div>
+        <h2 class="modal-title"      id="modalTitle"></h2>
+        <p  class="modal-confidence" id="modalConfidence"></p>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-section-title">✓ Your Matching Skills</div>
+        <div class="skills-grid" id="modalMatchedSkills"></div>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-section-title">🗺 Learning Roadmap</div>
+        <div class="roadmap" id="modalRoadmap"></div>
       </div>
 
     </div>
   </div>
+
 
   <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
