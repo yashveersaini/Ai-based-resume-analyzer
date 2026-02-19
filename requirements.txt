@@ -1,7 +1,23 @@
+# ── Flask Web Framework ──
 flask
-PyMuPDF           
-spacy            
-sentence-transformers  
-scikit-learn      
-torch             
+
+# ── Document Parsing ──
+PyMuPDF             
+python-docx         
+
+# ── NLP & Skill Extraction ──
+spacy               
+scikit-learn         
+
+# ── Embeddings & Semantic Similarity ──
+sentence-transformers 
+
+# ── ML Model Persistence ──
+joblib               
+
+# ── Data Processing ──
 pandas
+numpy
+
+# ── PyTorch (required by sentence-transformers) ──
+torch

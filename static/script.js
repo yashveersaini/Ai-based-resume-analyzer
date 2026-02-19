@@ -1,3 +1,11 @@
+/* =============================================
+   ResumeIQ — script.js
+   Place in: static/script.js
+   ============================================= */
+
+// ─────────────────────────────────────────────
+// TAB SWITCHING
+// ─────────────────────────────────────────────
 const SUBTITLES = {
   1: 'Upload your resume and a job description to get your ATS compatibility score with intelligent skill matching.',
   2: 'Upload your resume and our ML model will predict the top 3 job roles that best match your skill profile.',
@@ -11,14 +19,33 @@ function switchTab(n) {
   document.getElementById('headerSubtitle').textContent = SUBTITLES[n];
 }
 
+
+// ─────────────────────────────────────────────
+// FEATURE 1 — ATS SCORE
+// ─────────────────────────────────────────────
+
 // Upload zone wiring
 const uploadZone  = document.getElementById('uploadZone');
 const resumeInput = document.getElementById('resumeInput');
 const fileName    = document.getElementById('fileName');
 
+// File validation helper
+function isValidFileType(filename) {
+  const validExtensions = ['.pdf', '.docx'];
+  const ext = filename.toLowerCase().substring(filename.lastIndexOf('.'));
+  return validExtensions.includes(ext);
+}
+
 resumeInput.addEventListener('change', () => {
   if (resumeInput.files[0]) {
-    fileName.textContent   = '📄 ' + resumeInput.files[0].name;
+    const file = resumeInput.files[0];
+    if (!isValidFileType(file.name)) {
+      showError('errorBox', 'Only PDF and DOCX files are accepted.');
+      resumeInput.value = '';
+      fileName.style.display = 'none';
+      return;
+    }
+    fileName.textContent   = '📄 ' + file.name;
     fileName.style.display = 'block';
   }
 });
@@ -28,11 +55,16 @@ uploadZone.addEventListener('drop', e => {
   e.preventDefault();
   uploadZone.classList.remove('drag-over');
   const f = e.dataTransfer.files[0];
-  if (f && f.type === 'application/pdf') {
-    resumeInput.files        = e.dataTransfer.files;
-    fileName.textContent     = '📄 ' + f.name;
-    fileName.style.display   = 'block';
-  } else { showError('errorBox', 'Only PDF files are accepted.'); }
+  
+  if (f) {
+    if (!isValidFileType(f.name)) {
+      showError('errorBox', 'Only PDF and DOCX files are accepted.');
+      return;
+    }
+    resumeInput.files      = e.dataTransfer.files;
+    fileName.textContent   = '📄 ' + f.name;
+    fileName.style.display = 'block';
+  }
 });
 
 // Error helper
@@ -177,7 +209,14 @@ const fileName2    = document.getElementById('fileName2');
 
 resumeInput2.addEventListener('change', () => {
   if (resumeInput2.files[0]) {
-    fileName2.textContent   = '📄 ' + resumeInput2.files[0].name;
+    const file = resumeInput2.files[0];
+    if (!isValidFileType(file.name)) {
+      showError('errorBox2', 'Only PDF and DOCX files are accepted.');
+      resumeInput2.value = '';
+      fileName2.style.display = 'none';
+      return;
+    }
+    fileName2.textContent   = '📄 ' + file.name;
     fileName2.style.display = 'block';
   }
 });
@@ -187,11 +226,16 @@ uploadZone2.addEventListener('drop', e => {
   e.preventDefault();
   uploadZone2.classList.remove('drag-over');
   const f = e.dataTransfer.files[0];
-  if (f && f.type === 'application/pdf') {
+  
+  if (f) {
+    if (!isValidFileType(f.name)) {
+      showError('errorBox2', 'Only PDF and DOCX files are accepted.');
+      return;
+    }
     resumeInput2.files      = e.dataTransfer.files;
     fileName2.textContent   = '📄 ' + f.name;
     fileName2.style.display = 'block';
-  } else { showError('errorBox2', 'Only PDF files are accepted.'); }
+  }
 });
 
 // Rank labels

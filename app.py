@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify
-from utils.pdf_parser import extract_text_from_pdf
+from utils.document_parser import extract_text_from_document, is_supported_format, get_supported_formats_string
 from utils.ats_scorer import compute_ats_score
 from utils.skill_extractor import extract_skills
 from utils.job_suggester import suggest_jobs
@@ -24,13 +24,22 @@ def analyze():
 
     if resume_file.filename == "":
         return jsonify({"error": "No file selected"}), 400
+    
+    # Validate file format
+    if not is_supported_format(resume_file.filename):
+        return jsonify({
+            "error": f"Unsupported file format. Supported: {get_supported_formats_string()}"
+        }), 400
+    
     if not job_description:
         return jsonify({"error": "Job description is required"}), 400
 
     try:
-        resume_text = extract_text_from_pdf(resume_file)
+        resume_text = extract_text_from_document(resume_file, resume_file.filename)
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
     except Exception as e:
-        return jsonify({"error": f"Failed to read PDF: {str(e)}"}), 500
+        return jsonify({"error": f"Failed to read document: {str(e)}"}), 500
 
     result = compute_ats_score(resume_text, job_description)
     return jsonify(result)
@@ -46,11 +55,19 @@ def suggest():
 
     if resume_file.filename == "":
         return jsonify({"error": "No file selected"}), 400
+    
+    # Validate file format
+    if not is_supported_format(resume_file.filename):
+        return jsonify({
+            "error": f"Unsupported file format. Supported: {get_supported_formats_string()}"
+        }), 400
 
     try:
-        resume_text = extract_text_from_pdf(resume_file)
+        resume_text = extract_text_from_document(resume_file, resume_file.filename)
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
     except Exception as e:
-        return jsonify({"error": f"Failed to read PDF: {str(e)}"}), 500
+        return jsonify({"error": f"Failed to read document: {str(e)}"}), 500
 
     resume_skills = extract_skills(resume_text)
 
