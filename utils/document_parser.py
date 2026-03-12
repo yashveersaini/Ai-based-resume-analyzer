@@ -1,6 +1,5 @@
 import fitz  # PyMuPDF for PDF
 from docx import Document  # python-docx for DOCX
-import io
 import os
 
 
@@ -20,9 +19,6 @@ def extract_text_from_pdf(file_stream) -> str:
         text += page.get_text()
     return text.strip()
 
-
-
-from docx import Document
 
 def extract_text_from_docx(file_stream) -> str:
     doc = Document(file_stream)
@@ -103,9 +99,9 @@ def get_supported_formats_string() -> str:
     return "PDF, DOCX"
 
 
-if __name__ == "__main__":
-    path = "D:\\yashveer_resume.docx"
-    with open(path, "rb") as f:
-        result = extract_text_from_docx(f)
+# if __name__ == "__main__":
+#     path = "D:\\yashveer_resume.pdf"
+#     with open(path, "rb") as f:
+#         result = extract_text_from_document(f, 'yashveer_resume.pdf')
 
-    print(result)
+#     print(result)
