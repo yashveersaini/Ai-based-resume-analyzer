@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — ResumeIQ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #f5f7fa;
+      min-height: 100vh;
+    }
+    
+    /* Header */
+    header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px 0;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    nav {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 24px;
+      font-weight: 800;
+    }
+    
+    .nav-right {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+    
+    .user-name {
+      font-weight: 600;
+    }
+    
+    .btn-logout {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: white;
+      padding: 8px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      transition: background 0.3s;
+    }
+    
+    .btn-logout:hover {
+      background: rgba(255,255,255,0.3);
+    }
+    
+    /* Main Content */
+    .container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 24px;
+    }
+    
+    .welcome {
+      margin-bottom: 40px;
+    }
+    
+    .welcome h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 36px;
+      color: #333;
+      margin-bottom: 8px;
+    }
+    
+    .welcome p {
+      color: #666;
+      font-size: 16px;
+    }
+    
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+    }
+    
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    }
+    
+    .card-icon {
+      font-size: 36px;
+      margin-bottom: 16px;
+    }
+    
+    .card h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px;
+      margin-bottom: 12px;
+      color: #333;
+    }
+    
+    .card p {
+      color: #666;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+    
+    .btn {
+      display: inline-block;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s;
+      border: none;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102,126,234,0.3);
+    }
+    
+    .btn-outline {
+      background: white;
+      color: #667eea;
+      border: 2px solid #667eea;
+    }
+    
+    .btn-outline:hover {
+      background: #667eea;
+      color: white;
+    }
+    
+    .resume-info {
+      background: #f0f4ff;
+      border: 1px solid #d0dcf7;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+    
+    .resume-info-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    
+    .resume-info-item:last-child {
+      margin-bottom: 0;
+    }
+    
+    .resume-info-label {
+      color: #666;
+    }
+    
+    .resume-info-value {
+      font-weight: 600;
+      color: #333;
+    }
+    
+    .no-resume {
+      background: #fff8e1;
+      border: 1px solid #ffe082;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+      color: #856404;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  
+  <header>
+    <nav>
+      <div class="logo">ResumeIQ</div>
+      <div class="nav-right">
+        <span class="user-name" id="userName">Loading...</span>
+        <button class="btn-logout" onclick="logout()">Logout</button>
+      </div>
+    </nav>
+  </header>
+  
+  <div class="container">
+    <div class="welcome">
+      <h1>Dashboard</h1>
+      <p>Manage your resume and analyze job opportunities</p>
+    </div>
+    
+    <div class="cards">
+      
+      <!-- Resume Card -->
+      <div class="card">
+        <div class="card-icon">📄</div>
+        <h2>Your Resume</h2>
+        
+        <div id="resumeStatus">
+          <div class="no-resume">
+            No resume uploaded yet. Upload your resume to get started.
+          </div>
+        </div>
+        
+        <a href="/upload" class="btn btn-primary">Manage Resume</a>
+      </div>
+      
+      <!-- ATS Analysis Card -->
+      <div class="card">
+        <div class="card-icon">🎯</div>
+        <h2>ATS Score Analysis</h2>
+        <p>Compare your resume against job descriptions and get instant compatibility scores.</p>
+        <a href="/upload" class="btn btn-outline">Analyze Now</a>
+      </div>
+      
+      <!-- Job Suggestion Card -->
+      <div class="card">
+        <div class="card-icon">🤖</div>
+        <h2>Job Role Prediction</h2>
+        <p>Our ML model predicts the top 3 job roles that match your skills and experience.</p>
+        <a href="/upload" class="btn btn-outline">Get Suggestions</a>
+      </div>
+      
+    </div>
+  </div>
+  
+  <script>
+    // Fetch current user info
+    async function loadUserInfo() {
+      try {
+        const response = await fetch('/api/current-user');
+        
+        if (!response.ok) {
+          window.location.href = '/login';
+          return;
+        }
+        
+        const data = await response.json();
+        const user = data.user;
+        
+        document.getElementById('userName').textContent = user.name;
+        
+        // Update resume status
+        const resumeStatus = document.getElementById('resumeStatus');
+        
+        if (user.has_resume && user.resume) {
+          const uploadDate = new Date(user.resume.uploaded_at).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          });
+          
+          resumeStatus.innerHTML = `
+            <div class="resume-info">
+              <div class="resume-info-item">
+                <span class="resume-info-label">Filename:</span>
+                <span class="resume-info-value">${user.resume.filename}</span>
+              </div>
+              <div class="resume-info-item">
+                <span class="resume-info-label">Uploaded:</span>
+                <span class="resume-info-value">${uploadDate}</span>
+              </div>
+            </div>
+          `;
+        }
+      } catch (error) {
+        console.error('Error loading user info:', error);
+        window.location.href = '/login';
+      }
+    }
+    
+    async function logout() {
+      try {
+        await fetch('/api/logout', { method: 'POST' });
+        window.location.href = '/';
+      } catch (error) {
+        console.error('Logout error:', error);
+        window.location.href = '/';
+      }
+    }
+    
+    // Load on page load
+    loadUserInfo();
+  </script>
+  
+</body>
+</html>

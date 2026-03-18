@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ResumeIQ — AI-Powered Resume Analyzer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      color: white;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      width: 100%;
+    }
+    
+    /* Header */
+    header {
+      padding: 24px 0;
+    }
+    
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: white;
+      text-decoration: none;
+    }
+    
+    .nav-buttons {
+      display: flex;
+      gap: 16px;
+    }
+    
+    .btn {
+      padding: 12px 28px;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.3s;
+      border: none;
+      display: inline-block;
+    }
+    
+    .btn-ghost {
+      background: rgba(255,255,255,0.15);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+    
+    .btn-ghost:hover {
+      background: rgba(255,255,255,0.25);
+    }
+    
+    .btn-primary {
+      background: white;
+      color: #667eea;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    }
+    
+    /* Hero Section */
+    .hero {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 80px 24px;
+    }
+    
+    .hero-content h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(42px, 8vw, 72px);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 24px;
+    }
+    
+    .hero-content p {
+      font-size: 20px;
+      opacity: 0.95;
+      max-width: 600px;
+      margin: 0 auto 40px;
+      line-height: 1.6;
+    }
+    
+    .cta-buttons {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    .btn-large {
+      padding: 18px 40px;
+      font-size: 17px;
+    }
+    
+    /* Features */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-top: 60px;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .feature {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 16px;
+      padding: 28px;
+      text-align: left;
+    }
+    
+    .feature-icon {
+      font-size: 36px;
+      margin-bottom: 16px;
+    }
+    
+    .feature h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+    
+    .feature p {
+      font-size: 15px;
+      opacity: 0.9;
+      line-height: 1.6;
+    }
+    
+    footer {
+      text-align: center;
+      padding: 24px;
+      opacity: 0.8;
+      font-size: 14px;
+    }
+    
+    @media (max-width: 600px) {
+      .cta-buttons { flex-direction: column; }
+      .btn-large { width: 100%; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  
+  <header>
+    <div class="container">
+      <nav>
+        <a href="/" class="logo">ResumeIQ</a>
+        <div class="nav-buttons">
+          <a href="/login" class="btn btn-ghost">Login</a>
+          <a href="/signup" class="btn btn-primary">Sign Up</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+  
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <h1>AI-Powered Resume Analysis</h1>
+        <p>Optimize your resume for ATS systems, discover matching job roles, and get personalized career roadmaps — all powered by machine learning.</p>
+        
+        <div class="cta-buttons">
+          <a href="/signup" class="btn btn-primary btn-large">Get Started Free →</a>
+          <a href="/login" class="btn btn-ghost btn-large">Login</a>
+        </div>
+        
+        <div class="features">
+          <div class="feature">
+            <div class="feature-icon">🎯</div>
+            <h3>ATS Score Analysis</h3>
+            <p>Get instant feedback on how well your resume matches job descriptions with AI-powered scoring.</p>
+          </div>
+          
+          <div class="feature">
+            <div class="feature-icon">🤖</div>
+            <h3>Job Role Prediction</h3>
+            <p>Our ML model analyzes your skills and suggests the top 3 job roles that match your profile.</p>
+          </div>
+          
+          <div class="feature">
+            <div class="feature-icon">🗺</div>
+            <h3>Career Roadmaps</h3>
+            <p>Get personalized learning paths with step-by-step guidance for your target roles.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <footer>
+    <div class="container">
+      © 2025 ResumeIQ — Built with Python, Flask & PostgreSQL
+    </div>
+  </footer>
+  
+</body>
+</html>

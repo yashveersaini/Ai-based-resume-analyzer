@@ -21,3 +21,9 @@ numpy
 
 # ── PyTorch (required by sentence-transformers) ──
 torch
+
+psycopg2
+bcrypt
+dotenv
+
+cloudinary

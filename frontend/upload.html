@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resume Analysis — ResumeIQ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+  
+  <header>
+    <nav>
+      <div class="logo">ResumeIQ</div>
+      <div class="nav-right">
+        <a href="/dashboard" class="nav-link">Dashboard</a>
+        <span class="user-name" id="userName">Loading...</span>
+        <button class="btn-logout" onclick="logout()">Logout</button>
+      </div>
+    </nav>
+  </header>
+  
+  <div class="container">
+    
+    <div class="page-header">
+      <h1>Resume Analysis</h1>
+      <p>Upload your resume and analyze it against job descriptions</p>
+    </div>
+    
+    <!-- Tab Navigation -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('upload')">📄 Upload Resume</button>
+      <button class="tab-btn" onclick="switchTab('ats')">🎯 ATS Score</button>
+      <button class="tab-btn" onclick="switchTab('suggest')">🤖 Job Suggestions</button>
+    </div>
+    
+    <!-- ═══════════════════════════════════════════
+         TAB 1: UPLOAD RESUME
+    ═══════════════════════════════════════════ -->
+    <div id="tab-upload" class="tab-content active">
+      
+      <div class="card">
+        <div class="card-title">Current Resume</div>
+        
+        <div id="currentResumeInfo" class="resume-info-box">
+          <div class="loading">Loading resume info...</div>
+        </div>
+        
+        <div class="card-title" style="margin-top: 32px;">Upload New Resume</div>
+        <p class="hint-text">Upload a new resume to replace your current one. Only PDF and DOCX files are accepted.</p>
+        
+        <div class="upload-zone" id="uploadZone">
+          <input type="file" id="resumeInput" accept=".pdf,.docx">
+          <div class="upload-icon">📄</div>
+          <div class="upload-text">Drop your resume here</div>
+          <div class="upload-hint">PDF or DOCX only — max 5MB</div>
+          <div class="upload-file-name" id="fileName"></div>
+        </div>
+        
+        <button class="btn btn-primary" id="uploadBtn" onclick="uploadResume()" disabled>
+          Upload Resume
+        </button>
+      </div>
+      
+    </div>
+    
+    <!-- ═══════════════════════════════════════════
+         TAB 2: ATS SCORE ANALYSIS
+    ═══════════════════════════════════════════ -->
+    <div id="tab-ats" class="tab-content">
+      
+      <div class="card">
+        <div class="card-title">Job Description</div>
+        <p class="hint-text">Paste the job description you want to compare your resume against.</p>
+        <textarea id="jobDesc" placeholder="Paste the full job description here..."></textarea>
+        
+        <button class="btn btn-primary" onclick="analyzeATS()">Analyze Match →</button>
+      </div>
+      
+      <div class="loader" id="loaderATS">
+        <div class="loader-ring"></div>
+        <div class="loader-text">Analyzing with AI...</div>
+      </div>
+      
+      <!-- Results -->
+      <div id="atsResults" class="results-section">
+        
+        <div class="card">
+          <div class="card-title">ATS Match Score</div>
+          <div class="score-container">
+            <div class="score-ring-wrap">
+              <svg viewBox="0 0 120 120">
+                <circle class="score-ring-bg" cx="60" cy="60" r="54"/>
+                <circle class="score-ring-fg" id="scoreRing" cx="60" cy="60" r="54"/>
+              </svg>
+              <div class="score-label">
+                <span class="score-num" id="scoreNum">0%</span>
+              </div>
+            </div>
+            <div class="score-info">
+              <div class="score-title" id="scoreTitle">—</div>
+              <div class="score-desc" id="scoreDesc">—</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-title">✓ Matched Skills</div>
+          <div class="skills-grid" id="matchedSkills">
+            <div class="empty-state">No matched skills</div>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-title">✗ Missing Skills</div>
+          <div class="skills-grid" id="missingSkills">
+            <div class="empty-state">No missing skills</div>
+          </div>
+        </div>
+        
+      </div>
+      
+    </div>
+    
+    <!-- ═══════════════════════════════════════════
+         TAB 3: JOB ROLE SUGGESTIONS
+    ═══════════════════════════════════════════ -->
+    <div id="tab-suggest" class="tab-content">
+      
+      <div class="card">
+        <div class="card-title">Get Job Role Predictions</div>
+        <p class="hint-text">Our ML model will analyze your resume and predict the top 3 job roles that match your skills.</p>
+        
+        <button class="btn btn-primary" onclick="suggestJobs()">Get Predictions →</button>
+      </div>
+      
+      <div class="loader" id="loaderSuggest">
+        <div class="loader-ring"></div>
+        <div class="loader-text">Analyzing your skills...</div>
+      </div>
+      
+      <!-- Results -->
+      <div id="suggestResults" class="results-section">
+        
+        <div class="card">
+          <div class="card-title">◈ Your Resume Skills</div>
+          <div class="skills-grid" id="detectedSkills">
+            <div class="empty-state">No skills detected</div>
+          </div>
+        </div>
+        
+        <div class="section-label">🏆 Top 3 Recommended Roles</div>
+        <div id="jobCards"></div>
+        
+      </div>
+      
+    </div>
+    
+  </div>
+  
+  <!-- Error Toast -->
+  <div class="error-toast" id="errorToast"></div>
+  
+  <!-- Modal for Job Details -->
+  <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      
+      <div class="modal-header">
+        <div class="modal-rank-badge" id="modalRankBadge"></div>
+        <h2 class="modal-title" id="modalTitle"></h2>
+        <p class="modal-confidence" id="modalConfidence"></p>
+      </div>
+      
+      <div class="modal-section">
+        <div class="modal-section-title">✓ Your Matching Skills</div>
+        <div class="skills-grid" id="modalMatchedSkills"></div>
+      </div>
+      
+      <div class="modal-section">
+        <div class="modal-section-title">🗺 Learning Roadmap</div>
+        <div class="roadmap" id="modalRoadmap"></div>
+      </div>
+      
+    </div>
+  </div>
+  
+  <script src="/static/js/upload.js"></script>
+  
+</body>
+</html>
