@@ -18,6 +18,8 @@ joblib
 # ── Data Processing ──
 pandas
 numpy
+matplotlib
+seaborn
 
 # ── PyTorch (required by sentence-transformers) ──
 torch

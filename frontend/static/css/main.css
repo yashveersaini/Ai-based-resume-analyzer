@@ -522,14 +522,74 @@ textarea:focus {
   margin-bottom: 8px;
 }
 
-.job-confidence {
+.job-meta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.source-badge {
   display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.source-badge.trending {
+  background: rgba(255,107,0,0.1);
+  color: #ff6b00;
+  border: 1px solid rgba(255,107,0,0.3);
+}
+
+.source-badge.ml {
   background: rgba(102,126,234,0.1);
   color: var(--primary);
+  border: 1px solid rgba(102,126,234,0.3);
+}
+
+.job-confidence {
+  display: inline-block;
   padding: 4px 12px;
   border-radius: 6px;
   font-size: 13px;
   font-weight: 600;
+}
+
+.job-confidence.conf-high {
+  background: rgba(0,200,150,0.1);
+  color: var(--success);
+  border: 1px solid rgba(0,200,150,0.3);
+}
+
+.job-confidence.conf-medium {
+  background: rgba(255,159,67,0.1);
+  color: var(--warning);
+  border: 1px solid rgba(255,159,67,0.3);
+}
+
+.job-confidence.conf-low {
+  background: rgba(255,101,132,0.1);
+  color: var(--error);
+  border: 1px solid rgba(255,101,132,0.3);
+}
+
+.job-score {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  background: rgba(102,126,234,0.1);
+  color: var(--primary);
+}
+
+.matched-preview {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-family: 'DM Mono', monospace;
+  margin-top: 6px;
 }
 
 /* ── Modal ── */
@@ -652,6 +712,33 @@ textarea:focus {
   color: var(--text-muted);
   font-size: 14px;
   line-height: 1.6;
+}
+
+/* ── No Roadmap Message ── */
+.no-roadmap-message {
+  text-align: center;
+  padding: 40px 20px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border: 1px dashed var(--border);
+}
+
+.no-roadmap-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.no-roadmap-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.no-roadmap-hint {
+  font-size: 14px;
+  color: var(--text-muted);
 }
 
 /* ── Error Toast ── */

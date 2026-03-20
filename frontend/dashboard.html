@@ -235,21 +235,24 @@
         <div class="card-icon">🎯</div>
         <h2>ATS Score Analysis</h2>
         <p>Compare your resume against job descriptions and get instant compatibility scores.</p>
-        <a href="/upload" class="btn btn-outline">Analyze Now</a>
+        <button class="btn btn-outline" id="atsAnalyzeBtn" onclick="goToATS()">Analyze Now</button>
       </div>
       
       <!-- Job Suggestion Card -->
       <div class="card">
         <div class="card-icon">🤖</div>
         <h2>Job Role Prediction</h2>
-        <p>Our ML model predicts the top 3 job roles that match your skills and experience.</p>
-        <a href="/upload" class="btn btn-outline">Get Suggestions</a>
+        <p>Our ML model predicts the top job roles that match your skills and experience.</p>
+        <button class="btn btn-outline" id="jobSuggestBtn" onclick="goToJobSuggestions()">Get Suggestions</button>
       </div>
       
     </div>
   </div>
   
   <script>
+    // Global user state
+    let currentUser = null;
+    
     // Fetch current user info
     async function loadUserInfo() {
       try {
@@ -261,15 +264,15 @@
         }
         
         const data = await response.json();
-        const user = data.user;
+        currentUser = data.user;
         
-        document.getElementById('userName').textContent = user.name;
+        document.getElementById('userName').textContent = currentUser.name;
         
         // Update resume status
         const resumeStatus = document.getElementById('resumeStatus');
         
-        if (user.has_resume && user.resume) {
-          const uploadDate = new Date(user.resume.uploaded_at).toLocaleDateString('en-US', {
+        if (currentUser.has_resume && currentUser.resume) {
+          const uploadDate = new Date(currentUser.resume.uploaded_at).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
             day: 'numeric'
@@ -279,7 +282,7 @@
             <div class="resume-info">
               <div class="resume-info-item">
                 <span class="resume-info-label">Filename:</span>
-                <span class="resume-info-value">${user.resume.filename}</span>
+                <span class="resume-info-value">${currentUser.resume.filename}</span>
               </div>
               <div class="resume-info-item">
                 <span class="resume-info-label">Uploaded:</span>
@@ -291,6 +294,38 @@
       } catch (error) {
         console.error('Error loading user info:', error);
         window.location.href = '/login';
+      }
+    }
+    
+    // Smart navigation to ATS tab
+    function goToATS() {
+      if (!currentUser) {
+        window.location.href = '/upload';
+        return;
+      }
+      
+      if (currentUser.has_resume) {
+        // Resume exists - go directly to ATS tab
+        window.location.href = '/upload?tab=ats';
+      } else {
+        // No resume - go to upload tab first
+        window.location.href = '/upload?tab=upload';
+      }
+    }
+    
+    // Smart navigation to Job Suggestions tab
+    function goToJobSuggestions() {
+      if (!currentUser) {
+        window.location.href = '/upload';
+        return;
+      }
+      
+      if (currentUser.has_resume) {
+        // Resume exists - go directly to Job Suggestions tab
+        window.location.href = '/upload?tab=suggest';
+      } else {
+        // No resume - go to upload tab first
+        window.location.href = '/upload?tab=upload';
       }
     }
     

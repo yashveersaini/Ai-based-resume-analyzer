@@ -1,9 +1,28 @@
 import fitz  # PyMuPDF for PDF
 from docx import Document  # python-docx for DOCX
 import os
+import re, unicodedata
 
 
 SUPPORTED_EXTENSIONS = {'.pdf', '.docx'}
+
+
+def cleanResume(txt):
+    txt = re.sub(r'http\S+|www\S+', '', txt)
+    txt = re.sub(r'\S+@\S+', '', txt)
+    txt = re.sub(r'\bRT\b', '', txt)
+    txt = re.sub(r'#\S+', '', txt)
+    txt = re.sub(r'@\S+', '', txt)
+    txt = unicodedata.normalize('NFKD', txt)
+    txt = txt.encode('ascii', 'ignore').decode('ascii')
+    txt = re.sub(r'[\u2018\u2019\u201c\u201d]', '', txt)
+    txt = re.sub(r'[\u2013\u2014]', ' ', txt)
+    txt = re.sub(r'\u2026', ' ', txt)
+    txt = re.sub(r'[^a-zA-Z\s]', '', txt)
+    txt = txt.lower()
+    txt = re.sub(r'\s+', ' ', txt).strip()
+    return txt
+
 
 
 def get_file_extension(filename: str) -> str:

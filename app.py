@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, session, redirect, url_for, send_from_directory
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 from functools import wraps
 import os
 from werkzeug.utils import secure_filename
@@ -18,7 +18,7 @@ from utils.database import (
 from utils.document_parser import extract_text_from_document, is_supported_format
 from utils.ats_scorer import compute_ats_score
 from utils.skill_extractor import extract_skills
-from utils.job_suggester import suggest_jobs
+from utils.hybrid_recommender import get_top5_recommendations
 
 app = Flask(__name__, 
             template_folder='frontend',
@@ -28,7 +28,6 @@ app = Flask(__name__,
 # CONFIGURATION
 # ═══════════════════════════════════════════════════════════════
 
-
 # Secret key for session management (CHANGE THIS in production!)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your-secret-key-change-this-in-production')
 
@@ -36,7 +35,7 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your-secret-key-change-this-
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # 5MB max
 app.config['ALLOWED_EXTENSIONS'] = {'.pdf', '.docx'}
 
-
+# Cloudinary configuration
 cloudinary.config(
     cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
     api_key=os.getenv("CLOUDINARY_API_KEY"),
@@ -68,7 +67,6 @@ def get_file_extension(filename):
 
 def delete_old_resume_file(user_id):
     """Delete the old resume from Cloudinary if it exists."""
-    
     resume = get_user_resume(user_id)
 
     if resume and resume.get("public_id"):
@@ -77,11 +75,10 @@ def delete_old_resume_file(user_id):
                 resume["public_id"],
                 resource_type="raw"
             )
-
             print(f"✅ Deleted old resume from Cloudinary: {resume['public_id']}")
-
         except Exception as e:
             print(f"⚠ Error deleting resume from Cloudinary: {e}")
+
 
 # ═══════════════════════════════════════════════════════════════
 # FRONTEND ROUTES (Serve HTML Pages)
@@ -238,7 +235,7 @@ def api_current_user():
 @app.route('/api/upload-resume', methods=['POST'])
 @login_required
 def api_upload_resume():
-    """Upload and save user's resume (replaces old one if exists)."""
+    """Upload and save user's resume to Cloudinary (replaces old one if exists)."""
     if 'resume' not in request.files:
         return jsonify({'error': 'No file uploaded'}), 400
     
@@ -253,29 +250,36 @@ def api_upload_resume():
     
     user_id = session['user_id']
     
-    # Delete old resume file from Cloudinary
+    # Delete old resume from Cloudinary
     delete_old_resume_file(user_id)
     
-    # Save new file
+    # Save new file to Cloudinary
     filename = secure_filename(file.filename)
 
-    upload_result = cloudinary.uploader.upload(
-        file,
-        resource_type="raw",
-        folder="resumes",
-        public_id=f"user_{user_id}",
-        overwrite=True
-    )
+    try:
+        upload_result = cloudinary.uploader.upload(
+            file,
+            resource_type="raw",
+            folder="resumes",
+            public_id=f"user_{user_id}",
+            overwrite=True
+        )
 
-    file_url = upload_result["secure_url"]
-    public_id = upload_result["public_id"]
+        file_url = upload_result["secure_url"]
+        public_id = upload_result["public_id"]
+    except Exception as e:
+        return jsonify({'error': f'Failed to upload to Cloudinary: {str(e)}'}), 500
     
     # Save to database (this will replace existing resume due to UNIQUE constraint)
     resume = save_resume(user_id, filename, file_url, public_id)
     
     if resume is None:
-        cloudinary.uploader.destroy(public_id, resource_type="raw")
-        return jsonify({'error': 'Failed to save resume'}), 500
+        # Clean up Cloudinary if DB save failed
+        try:
+            cloudinary.uploader.destroy(public_id, resource_type="raw")
+        except:
+            pass
+        return jsonify({'error': 'Failed to save resume to database'}), 500
     
     return jsonify({
         'success': True,
@@ -309,10 +313,10 @@ def api_get_resume():
 @app.route('/api/delete-resume', methods=['DELETE'])
 @login_required
 def api_delete_resume():
-    """Delete current user's resume."""
+    """Delete current user's resume from Cloudinary and database."""
     user_id = session['user_id']
     
-    # Delete file from filesystem
+    # Delete from Cloudinary
     delete_old_resume_file(user_id)
     
     # Delete from database
@@ -331,7 +335,7 @@ def api_delete_resume():
 @app.route("/api/analyze", methods=["POST"])
 @login_required
 def api_analyze():
-    """ATS Score analysis (requires job description + uses user's uploaded resume)."""
+    """ATS Score analysis (downloads resume from Cloudinary and analyzes)."""
     user_id = session['user_id']
     
     # Get user's uploaded resume
@@ -347,15 +351,10 @@ def api_analyze():
     
     try:
         # Download resume from Cloudinary URL
-        print("Resume URL:", resume_db['file_path'])
-        print("Public_id:", resume_db['public_id'])
-
         response = requests.get(resume_db['file_path'], timeout=10)
-        print("Download status:", response.status_code)
-        print("Download response:", response.text[:200])
 
         if response.status_code != 200:
-            return jsonify({"error": "Failed to download resume file"}), 500
+            return jsonify({"error": "Failed to download resume from Cloudinary"}), 500
 
         file_stream = BytesIO(response.content)
 
@@ -372,7 +371,7 @@ def api_analyze():
 @app.route("/api/suggest", methods=["POST"])
 @login_required
 def api_suggest():
-    """Job role suggestion (uses user's uploaded resume)."""
+    """Job role suggestion using hybrid recommender (downloads resume from Cloudinary)."""
     user_id = session['user_id']
     
     # Get user's uploaded resume
@@ -384,11 +383,9 @@ def api_suggest():
     try:
         # Download resume from Cloudinary URL
         response = requests.get(resume_db['file_path'], timeout=10)
-        print("Download status:", response.status_code)
-        print("Download response:", response.text[:200])
 
         if response.status_code != 200:
-            return jsonify({"error": "Failed to download resume file"}), 500
+            return jsonify({"error": "Failed to download resume from Cloudinary"}), 500
 
         file_stream = BytesIO(response.content)
 
@@ -398,17 +395,19 @@ def api_suggest():
     except Exception as e:
         return jsonify({"error": f"Failed to read resume: {str(e)}"}), 500
 
+    # Get top 5 recommendations from hybrid system
+    try:
+        recommendations = get_top5_recommendations(resume_text)
+    except Exception as e:
+        return jsonify({"error": f"Prediction failed: {str(e)}"}), 500
+
+    # Also get skills for display
     resume_skills = extract_skills(resume_text)
 
-    if not resume_skills:
-        return jsonify({"error": "No recognizable skills found in your resume."}), 400
-
-    suggestions = suggest_jobs(resume_skills)
-
     return jsonify({
-        "resume_skills": sorted(resume_skills),
-        "suggestions": suggestions,
-        "error": None
+        "resume_skills":    sorted(resume_skills),
+        "recommendations":  recommendations,
+        "error":            None
     })
 
 
