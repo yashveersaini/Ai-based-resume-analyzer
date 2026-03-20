@@ -118,6 +118,13 @@ def upload_page():
     return render_template('upload.html')
 
 
+@app.route('/data/<path:filename>')
+def serve_data(filename):
+    """Serve JSON files from data folder."""
+    from flask import send_from_directory
+    return send_from_directory('data', filename)
+
+
 # ═══════════════════════════════════════════════════════════════
 # AUTHENTICATION API ROUTES
 # ═══════════════════════════════════════════════════════════════
