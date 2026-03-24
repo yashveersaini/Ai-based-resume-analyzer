@@ -9,9 +9,6 @@ BASE_DIR   = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODEL_DIR  = os.path.join(BASE_DIR, 'models')
 
 
-print(BASE_DIR)
-print(MODEL_DIR)
-
 tfidf          = pickle.load(open(os.path.join(MODEL_DIR, 'tfidf.pkl'), 'rb'))
 clf            = pickle.load(open(os.path.join(MODEL_DIR, 'clf_logistics.pkl'), 'rb'))
 label_encoder  = pickle.load(open(os.path.join(MODEL_DIR, 'label_encoder.pkl'), 'rb'))

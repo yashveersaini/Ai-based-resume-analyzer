@@ -741,6 +741,134 @@ textarea:focus {
   color: var(--text-muted);
 }
 
+/* ── Category Scores ── */
+.category-scores-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.category-score {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.category-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 140px;
+}
+
+.category-icon {
+  font-size: 20px;
+}
+
+.category-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.category-score-bar {
+  flex: 1;
+  height: 12px;
+  background: var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.category-score-fill {
+  height: 100%;
+  transition: width 0.5s ease;
+  border-radius: 6px;
+}
+
+.category-score-fill.score-high {
+  background: var(--success);
+}
+
+.category-score-fill.score-medium {
+  background: var(--warning);
+}
+
+.category-score-fill.score-low {
+  background: var(--error);
+}
+
+.category-score-value {
+  min-width: 50px;
+  text-align: right;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text);
+}
+
+/* ── Keywords List ── */
+.keywords-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.keyword-chip {
+  padding: 6px 12px;
+  background: rgba(255,101,132,0.1);
+  border: 1px solid rgba(255,101,132,0.3);
+  color: var(--error);
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* ── Improvements Section ── */
+.improvement-section {
+  margin-bottom: 20px;
+}
+
+.improvement-section:last-child {
+  margin-bottom: 0;
+}
+
+.improvement-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.improvement-icon {
+  font-size: 20px;
+}
+
+.improvement-title {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--text);
+}
+
+.improvement-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.improvement-list li {
+  padding: 8px 0 8px 24px;
+  position: relative;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.improvement-list li:before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--primary);
+  font-weight: 700;
+}
+
 /* ── Error Toast ── */
 .error-toast {
   position: fixed;

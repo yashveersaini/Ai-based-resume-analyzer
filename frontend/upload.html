@@ -86,7 +86,7 @@
       <div id="atsResults" class="results-section">
         
         <div class="card">
-          <div class="card-title">ATS Match Score</div>
+          <div class="card-title">Overall ATS Score</div>
           <div class="score-container">
             <div class="score-ring-wrap">
               <svg viewBox="0 0 120 120">
@@ -105,6 +105,11 @@
         </div>
         
         <div class="card">
+          <div class="card-title">📊 Category Scores</div>
+          <div id="categoryScores" class="category-scores-container"></div>
+        </div>
+        
+        <div class="card">
           <div class="card-title">✓ Matched Skills</div>
           <div class="skills-grid" id="matchedSkills">
             <div class="empty-state">No matched skills</div>
@@ -115,6 +120,20 @@
           <div class="card-title">✗ Missing Skills</div>
           <div class="skills-grid" id="missingSkills">
             <div class="empty-state">No missing skills</div>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-title">🔑 Missing Keywords</div>
+          <div id="missingKeywordsContainer">
+            <div class="empty-state">Loading...</div>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-title">💡 Improvement Suggestions</div>
+          <div id="improvementsContainer">
+            <div class="empty-state">Loading...</div>
           </div>
         </div>
         

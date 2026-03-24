@@ -1,12 +1,15 @@
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 from functools import wraps
 import os
+from dotenv import load_dotenv
 from werkzeug.utils import secure_filename
 import cloudinary
 import cloudinary.uploader
 import requests
 from io import BytesIO
 
+# Load environment variables from .env file
+load_dotenv()
 
 # Import database functions
 from utils.database import (

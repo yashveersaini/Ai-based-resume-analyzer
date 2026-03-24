@@ -1,31 +1,37 @@
-# ── Flask Web Framework ──
 flask
+python-dotenv        
+
+psycopg2-binary         # PostgreSQL adapter
+
+# ── Authentication ──
+bcrypt                  # Password hashing
+
+# ── Cloudinary (File Storage) ──
+cloudinary              # Cloud file storage
+requests                # HTTP requests for downloading from Cloudinary
 
 # ── Document Parsing ──
-PyMuPDF             
-python-docx         
+PyMuPDF              # PDF extraction (fitz)
+python-docx          # DOCX extraction
 
 # ── NLP & Skill Extraction ──
-spacy               
-scikit-learn         
+spacy                # NLP for skill extraction
+scikit-learn         # TF-IDF, model training
 
-# ── Embeddings & Semantic Similarity ──
-sentence-transformers 
+# ── AI & LLM Integration ──
+langchain            # LangChain framework
+langchain-google-genai  # Google Gemini integration
+google-generativeai  # Google Gemini API client
+
+# ── Embeddings & Semantic Similarity (for hybrid recommender) ──
+sentence-transformers # all-MiniLM-L6-v2 for ATS scoring
 
 # ── ML Model Persistence ──
-joblib               
+joblib               # Save/load ML models
 
 # ── Data Processing ──
 pandas
 numpy
-matplotlib
-seaborn
 
 # ── PyTorch (required by sentence-transformers) ──
 torch
-
-psycopg2
-bcrypt
-dotenv
-
-cloudinary

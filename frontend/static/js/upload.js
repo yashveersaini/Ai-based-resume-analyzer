@@ -1,8 +1,3 @@
-// ═══════════════════════════════════════════════════════════════
-// ResumeIQ — Upload Page JavaScript
-// frontend/static/js/upload.js
-// ═══════════════════════════════════════════════════════════════
-
 // ── Global State ──
 let currentUser = null;
 let recommendations = [];
@@ -251,8 +246,8 @@ async function analyzeATS() {
 }
 
 function displayATSResults(data) {
-  // Score ring
-  const score = data.score;
+  // Main Overall Score Ring
+  const score = data.overall_score || 0;
   const ring = document.getElementById('scoreRing');
   const scoreNum = document.getElementById('scoreNum');
   const scoreTitle = document.getElementById('scoreTitle');
@@ -273,15 +268,15 @@ function displayATSResults(data) {
   } else if (score >= 50) {
     color = '#ff9f43';
     label = 'Good Match';
-    description = 'Your resume covers many key skills.';
+    description = 'Your resume covers many key requirements. Review suggestions below.';
   } else if (score >= 25) {
     color = '#ff6584';
-    label = 'Partial Match';
-    description = 'Consider adding missing skills to improve your match.';
+    label = 'Needs Improvement';
+    description = 'Consider the improvement suggestions to strengthen your resume.';
   } else {
     color = '#ff6584';
     label = 'Low Match';
-    description = 'Significant skill gaps exist. Consider tailoring your resume.';
+    description = 'Significant gaps exist. Follow the detailed suggestions below.';
   }
   
   ring.style.stroke = color;
@@ -289,11 +284,100 @@ function displayATSResults(data) {
   scoreTitle.textContent = label;
   scoreDesc.textContent = description;
   
+  // Display category scores
+  displayCategoryScores(data);
+  
   // Matched skills
-  renderSkills('matchedSkills', data.matched_skills, 'match');
+  renderSkills('matchedSkills', data.matched_skills || [], 'match');
   
   // Missing skills
-  renderSkills('missingSkills', data.missing_skills, 'missing');
+  renderSkills('missingSkills', data.missing_skills || [], 'missing');
+  
+  // Missing keywords
+  displayMissingKeywords(data.missing_keywords || []);
+  
+  // Improvement suggestions
+  displayImprovements(data.improvements || {});
+}
+
+function displayCategoryScores(data) {
+  const categoriesContainer = document.getElementById('categoryScores');
+  if (!categoriesContainer) return;
+  
+  const categories = [
+    { key: 'tone_style_score', label: 'Tone & Style', icon: '✍️' },
+    { key: 'content_score', label: 'Content Match', icon: '📝' },
+    { key: 'structure_score', label: 'Structure', icon: '📋' },
+    { key: 'skills_score', label: 'Skills Match', icon: '🎯' },
+    { key: 'ats_score', label: 'ATS Compatibility', icon: '🤖' }
+  ];
+  
+  categoriesContainer.innerHTML = categories.map(cat => {
+    const score = data[cat.key] || 0;
+    const colorClass = score >= 75 ? 'score-high' : score >= 50 ? 'score-medium' : 'score-low';
+    
+    return `
+      <div class="category-score">
+        <div class="category-header">
+          <span class="category-icon">${cat.icon}</span>
+          <span class="category-label">${cat.label}</span>
+        </div>
+        <div class="category-score-bar">
+          <div class="category-score-fill ${colorClass}" style="width: ${score}%"></div>
+        </div>
+        <div class="category-score-value">${score}%</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function displayMissingKeywords(keywords) {
+  const container = document.getElementById('missingKeywordsContainer');
+  if (!container) return;
+  
+  if (keywords.length === 0) {
+    container.innerHTML = '<div class="empty-state">All important keywords are present!</div>';
+  } else {
+    container.innerHTML = `
+      <div class="keywords-list">
+        ${keywords.map(kw => `<span class="keyword-chip">${kw}</span>`).join('')}
+      </div>
+    `;
+  }
+}
+
+function displayImprovements(improvements) {
+  const container = document.getElementById('improvementsContainer');
+  if (!container) return;
+  
+  const categories = [
+    { key: 'tone_style', label: 'Tone & Style', icon: '✍️' },
+    { key: 'content', label: 'Content', icon: '📝' },
+    { key: 'structure', label: 'Structure', icon: '📋' },
+    { key: 'skills', label: 'Skills', icon: '🎯' },
+    { key: 'ats', label: 'ATS Optimization', icon: '🤖' }
+  ];
+  
+  container.innerHTML = categories.map(cat => {
+    const suggestions = improvements[cat.key] || [];
+    if (suggestions.length === 0) return '';
+    
+    return `
+      <div class="improvement-section">
+        <div class="improvement-header">
+          <span class="improvement-icon">${cat.icon}</span>
+          <span class="improvement-title">${cat.label}</span>
+        </div>
+        <ul class="improvement-list">
+          ${suggestions.map(s => `<li>${s}</li>`).join('')}
+        </ul>
+      </div>
+    `;
+  }).join('');
+  
+  if (!container.innerHTML) {
+    container.innerHTML = '<div class="empty-state">No specific improvements needed!</div>';
+  }
 }
 
 function renderSkills(containerId, skills, type) {
