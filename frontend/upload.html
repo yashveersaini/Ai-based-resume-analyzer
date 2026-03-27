@@ -46,6 +46,16 @@
           <div class="loading">Loading resume info...</div>
         </div>
         
+        <!-- View Resume Button -->
+        <div id="viewResumeSection" style="display: none; margin-top: 16px;">
+          <button class="btn btn-outline" onclick="viewResume()">
+            👁 View Resume
+          </button>
+          <button class="btn btn-outline" onclick="deleteResume()" style="margin-left: 8px;">
+            🗑 Delete Resume
+          </button>
+        </div>
+        
         <div class="card-title" style="margin-top: 32px;">Upload New Resume</div>
         <p class="hint-text">Upload a new resume to replace your current one. Only PDF and DOCX files are accepted.</p>
         
@@ -179,6 +189,30 @@
   
   <!-- Error Toast -->
   <div class="error-toast" id="errorToast"></div>
+  
+  <!-- Resume Viewer Modal -->
+  <div class="modal-overlay" id="resumeViewerOverlay" onclick="closeResumeViewer()">
+    <div class="modal resume-viewer-modal" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeResumeViewer()">✕</button>
+      
+      <div class="modal-header">
+        <h2 class="modal-title" id="resumeViewerTitle">Your Resume</h2>
+      </div>
+      
+      <div class="resume-viewer-content">
+        <iframe id="resumeViewerFrame" class="resume-iframe"></iframe>
+      </div>
+      
+      <div class="resume-viewer-footer">
+        <button class="btn btn-outline" onclick="downloadResume()">
+          ⬇ Download
+        </button>
+        <button class="btn btn-primary" onclick="closeResumeViewer()">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
   
   <!-- Modal for Job Details -->
   <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">

@@ -1,3 +1,8 @@
+// ═══════════════════════════════════════════════════════════════
+// ResumeIQ — Upload Page JavaScript
+// frontend/static/js/upload.js
+// ═══════════════════════════════════════════════════════════════
+
 // ── Global State ──
 let currentUser = null;
 let recommendations = [];
@@ -44,6 +49,7 @@ async function loadUserInfo() {
 
 function displayResumeInfo() {
   const container = document.getElementById('currentResumeInfo');
+  const viewSection = document.getElementById('viewResumeSection');
   
   if (currentUser.has_resume && currentUser.resume) {
     const uploadDate = new Date(currentUser.resume.uploaded_at).toLocaleDateString('en-US', {
@@ -64,12 +70,18 @@ function displayResumeInfo() {
         <span class="resume-info-value">${uploadDate}</span>
       </div>
     `;
+    
+    // Show view resume button
+    viewSection.style.display = 'block';
   } else {
     container.innerHTML = `
       <div class="no-resume-box">
         ⚠ No resume uploaded yet. Upload one below to get started.
       </div>
     `;
+    
+    // Hide view resume button
+    viewSection.style.display = 'none';
   }
 }
 
@@ -469,6 +481,124 @@ function displaySuggestions(data) {
       </div>
     `;
   }).join('');
+}
+
+// ══════════════════════════════════════════════════════════════
+// RESUME VIEWER FUNCTIONS
+// ══════════════════════════════════════════════════════════════
+
+async function viewResume() {
+  if (!currentUser || !currentUser.has_resume) {
+    showError('No resume available to view');
+    return;
+  }
+  
+  try {
+    const response = await fetch('/api/get-resume');
+    const data = await response.json();
+    
+    if (response.ok && data.resume) {
+      const resumeUrl = data.resume.file_url;
+      const filename = data.resume.filename;
+      
+      // Set modal title
+      document.getElementById('resumeViewerTitle').textContent = filename;
+      
+      // Load resume in iframe
+      const iframe = document.getElementById('resumeViewerFrame');
+      
+      // Check if PDF or DOCX
+      if (filename.toLowerCase().endsWith('.pdf')) {
+        // For PDF, use Google Docs viewer for better compatibility
+        iframe.src = `https://docs.google.com/viewer?url=${encodeURIComponent(resumeUrl)}&embedded=true`;
+      } else if (filename.toLowerCase().endsWith('.docx')) {
+        // For DOCX, use Office Online viewer
+        iframe.src = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(resumeUrl)}`;
+      } else {
+        // Fallback - try direct URL
+        iframe.src = resumeUrl;
+      }
+      
+      // Show modal
+      document.getElementById('resumeViewerOverlay').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    } else {
+      showError('Failed to load resume');
+    }
+  } catch (error) {
+    showError('Error loading resume: ' + error.message);
+  }
+}
+
+function closeResumeViewer() {
+  document.getElementById('resumeViewerOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  
+  // Clear iframe to stop loading
+  const iframe = document.getElementById('resumeViewerFrame');
+  iframe.src = 'about:blank';
+}
+
+async function downloadResume() {
+  if (!currentUser || !currentUser.has_resume) {
+    showError('No resume available to download');
+    return;
+  }
+  
+  try {
+    const response = await fetch('/api/get-resume');
+    const data = await response.json();
+    
+    if (response.ok && data.resume) {
+      const resumeUrl = data.resume.file_url;
+      const filename = data.resume.filename;
+      
+      // Create temporary link and trigger download
+      const link = document.createElement('a');
+      link.href = resumeUrl;
+      link.download = filename;
+      link.target = '_blank';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      showSuccess('Download started!');
+    } else {
+      showError('Failed to download resume');
+    }
+  } catch (error) {
+    showError('Error downloading resume: ' + error.message);
+  }
+}
+
+async function deleteResume() {
+  if (!currentUser || !currentUser.has_resume) {
+    showError('No resume to delete');
+    return;
+  }
+  
+  const confirmed = confirm('Are you sure you want to delete your resume? This action cannot be undone.');
+  
+  if (!confirmed) return;
+  
+  try {
+    const response = await fetch('/api/delete-resume', {
+      method: 'DELETE'
+    });
+    
+    const data = await response.json();
+    
+    if (response.ok && data.success) {
+      showSuccess('Resume deleted successfully');
+      
+      // Reload user info to update UI
+      await loadUserInfo();
+    } else {
+      showError(data.error || 'Failed to delete resume');
+    }
+  } catch (error) {
+    showError('Error deleting resume: ' + error.message);
+  }
 }
 
 // ══════════════════════════════════════════════════════════════
