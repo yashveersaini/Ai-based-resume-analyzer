@@ -1,7 +1,11 @@
 # 🚀 ResumeIQ – AI-Based Resume Analyzer & Job Role Suggestion System
 
 ## 📌 Brief One Line Summary  
-An AI-powered web application that analyzes resumes, evaluates ATS compatibility with actionable improvement insights and recommends suitable job roles .
+An AI-powered web application that analyzes resumes, evaluates ATS compati
+bility with actionable improvement insights and recommends suitable job roles .
+
+https://github.com/user-attachments/assets/e21c357a-6e18-44d9-8889-c7a6f0307784
+
 
 ---
 
@@ -57,12 +61,31 @@ This project solves:
 
 ---
 
-## 📊 Dashboard / Model / Output  
-- ATS compatibility score (percentage-based)  
-- Skill gap analysis  
-- Resume improvement suggestions  
-- Predicted job roles with confidence score  
-- User-friendly dashboard for real-time interaction  
+## 📊 Dashboard / Model / Output     
+- ## **User-friendly dashboard for real-time interaction**  
+
+<img width="1827" height="792" alt="image" src="https://github.com/user-attachments/assets/91468c11-1ad7-448c-8b7e-e99c324dd980" />
+
+<img width="1806" height="806" alt="image" src="https://github.com/user-attachments/assets/fedf6555-242e-4e77-87e5-6a1abc119f49" />
+
+<img width="1666" height="825" alt="image" src="https://github.com/user-attachments/assets/2ac73f55-bdb7-482a-9049-9571cfda0818" />
+
+- ## **ATS compatibility score (percentage-based)**
+  
+<img width="1692" height="823" alt="image" src="https://github.com/user-attachments/assets/f2823cb2-53b6-474a-8005-d5b3022605c7" />
+
+- ## **Skill gap analysis**
+
+<img width="1693" height="833" alt="image" src="https://github.com/user-attachments/assets/0d8988fb-13be-4ee0-892d-d5c6dd216f4f" />
+
+- ## **Resume improvement suggestions**
+<img width="1671" height="820" alt="image" src="https://github.com/user-attachments/assets/55bd605b-738e-4069-8a66-51e219b2de20" />
+<img width="1691" height="771" alt="image" src="https://github.com/user-attachments/assets/b05cad3d-0f36-4fcf-b221-9d028d49f76f" />
+
+- ## **Predicted job roles with confidence score**
+<img width="1573" height="797" alt="image" src="https://github.com/user-attachments/assets/f0363b4d-47a5-413e-8409-8641c6f5db3c" /> 
+  
+<img width="1668" height="811" alt="image" src="https://github.com/user-attachments/assets/4fa0ef64-9f38-4952-b0ab-712f352e9b46" />
 
 ---
 
