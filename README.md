@@ -1,8 +1,7 @@
 # 🚀 ResumeIQ – AI-Based Resume Analyzer & Job Role Suggestion System
 
 ## 📌 Brief One Line Summary  
-An AI-powered web application that analyzes resumes, evaluates ATS compati
-bility with actionable improvement insights and recommends suitable job roles .
+An AI-powered web application that analyzes resumes, evaluates ATS compatibility with actionable improvement insights and recommends suitable job roles .
 
 https://github.com/user-attachments/assets/e21c357a-6e18-44d9-8889-c7a6f0307784
 
