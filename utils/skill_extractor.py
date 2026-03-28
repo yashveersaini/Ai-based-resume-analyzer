@@ -8,7 +8,6 @@ def extract_skills(text: str) -> list[str]:
     found_skills = []
 
     for skill in SKILL_BANK:
-        # Use word-boundary matching to avoid partial matches
         pattern = r'\b' + re.escape(skill) + r'\b'
         if re.search(pattern, text_lower):
             found_skills.append(skill)

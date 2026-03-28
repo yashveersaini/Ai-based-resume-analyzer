@@ -5,16 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ResumeIQ — AI-Powered Resume Analyzer</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
     body {
       font-family: 'DM Sans', sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #141e30, #243b55);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      color: white;
+      color: #e0e6ed;
     }
     
     .container {
@@ -24,7 +25,6 @@
       width: 100%;
     }
     
-    /* Header */
     header {
       padding: 24px 0;
     }
@@ -39,7 +39,7 @@
       font-family: 'Syne', sans-serif;
       font-size: 28px;
       font-weight: 800;
-      color: white;
+      color: #ffffff;
       text-decoration: none;
     }
     
@@ -62,26 +62,25 @@
     }
     
     .btn-ghost {
-      background: rgba(255,255,255,0.15);
-      color: white;
-      border: 1px solid rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.08);
+      color: #e0e6ed;
+      border: 1px solid rgba(255,255,255,0.15);
     }
     
     .btn-ghost:hover {
-      background: rgba(255,255,255,0.25);
+      background: rgba(255,255,255,0.15);
     }
     
     .btn-primary {
-      background: white;
-      color: #667eea;
+      background: linear-gradient(330deg, #4a9eff, #343a51);
+      color: #ffffff;
     }
     
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+      box-shadow: 0 8px 25px rgba(0,198,255,0.3);
     }
     
-    /* Hero Section */
     .hero {
       flex: 1;
       display: flex;
@@ -93,15 +92,16 @@
     
     .hero-content h1 {
       font-family: 'Syne', sans-serif;
-      font-size: clamp(42px, 8vw, 72px);
-      font-weight: 800;
+      font-size: clamp(42px, 8vw, 70px);
+      font-weight: 750;
       line-height: 1.1;
       margin-bottom: 24px;
+      color: #ffffff;
     }
     
     .hero-content p {
       font-size: 20px;
-      opacity: 0.95;
+      color: #aab6c4;
       max-width: 600px;
       margin: 0 auto 40px;
       line-height: 1.6;
@@ -119,7 +119,6 @@
       font-size: 17px;
     }
     
-    /* Features */
     .features {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -131,9 +130,9 @@
     }
     
     .feature {
-      background: rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.05);
       backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.1);
       border-radius: 16px;
       padding: 28px;
       text-align: left;
@@ -148,18 +147,19 @@
       font-family: 'Syne', sans-serif;
       font-size: 20px;
       margin-bottom: 10px;
+      color: #ffffff;
     }
     
     .feature p {
       font-size: 15px;
-      opacity: 0.9;
+      color: #aab6c4;
       line-height: 1.6;
     }
     
     footer {
       text-align: center;
       padding: 24px;
-      opacity: 0.8;
+      color: #aab6c4;
       font-size: 14px;
     }
     
@@ -169,6 +169,7 @@
     }
   </style>
 </head>
+
 <body>
   
   <header>
@@ -187,7 +188,7 @@
     <div class="container">
       <div class="hero-content">
         <h1>AI-Powered Resume Analysis</h1>
-        <p>Optimize your resume for ATS systems, discover matching job roles, and get personalized career roadmaps — all powered by machine learning.</p>
+        <p>Optimize your resume for ATS systems, discover matching job roles, and get personalized career roadmaps — all powered by AI and ML.</p>
         
         <div class="cta-buttons">
           <a href="/signup" class="btn btn-primary btn-large">Get Started Free →</a>
@@ -204,7 +205,7 @@
           <div class="feature">
             <div class="feature-icon">🤖</div>
             <h3>Job Role Prediction</h3>
-            <p>Our ML model analyzes your skills and suggests the top 3 job roles that match your profile.</p>
+            <p>Our ML model analyzes your skills and suggests the top job roles that match your profile.</p>
           </div>
           
           <div class="feature">

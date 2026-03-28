@@ -1,20 +1,14 @@
-// ═══════════════════════════════════════════════════════════════
-// ResumeIQ — Upload Page JavaScript
-// frontend/static/js/upload.js
-// ═══════════════════════════════════════════════════════════════
-
-// ── Global State ──
 let currentUser = null;
 let recommendations = [];
-let JOB_PROFILES = {}; // Will be loaded from JSON
+let JOB_PROFILES = {}; 
 
-// ── Load Roadmaps from JSON ──
+// Load Roadmaps from JSON -
 async function loadRoadmaps() {
   try {
     const response = await fetch('/data/roadmap.json');
     if (response.ok) {
       JOB_PROFILES = await response.json();
-      console.log('✅ Roadmaps loaded successfully');
+      console.log('Roadmaps loaded successfully');
     } else {
       console.error('⚠ Failed to load roadmaps');
     }
@@ -23,7 +17,7 @@ async function loadRoadmaps() {
   }
 }
 
-// ── Load User Info on Page Load ──
+// -Load User Info on Page Load -
 async function loadUserInfo() {
   try {
     const response = await fetch('/api/current-user');
@@ -38,7 +32,6 @@ async function loadUserInfo() {
     
     document.getElementById('userName').textContent = currentUser.name;
     
-    // Display current resume info
     displayResumeInfo();
     
   } catch (error) {
@@ -106,9 +99,7 @@ function switchTab(tabName) {
   document.getElementById(`tab-${tabName}`).classList.add('active');
 }
 
-// ══════════════════════════════════════════════════════════════
 // TAB 1: RESUME UPLOAD
-// ══════════════════════════════════════════════════════════════
 
 const uploadZone = document.getElementById('uploadZone');
 const resumeInput = document.getElementById('resumeInput');
@@ -209,9 +200,7 @@ async function uploadResume() {
   }
 }
 
-// ══════════════════════════════════════════════════════════════
 // TAB 2: ATS SCORE ANALYSIS
-// ══════════════════════════════════════════════════════════════
 
 async function analyzeATS() {
   if (!currentUser.has_resume) {
@@ -405,9 +394,7 @@ function renderSkills(containerId, skills, type) {
   ).join('');
 }
 
-// ══════════════════════════════════════════════════════════════
 // TAB 3: JOB ROLE SUGGESTIONS (HYBRID RECOMMENDER)
-// ══════════════════════════════════════════════════════════════
 
 async function suggestJobs() {
   if (!currentUser.has_resume) {
@@ -483,9 +470,7 @@ function displaySuggestions(data) {
   }).join('');
 }
 
-// ══════════════════════════════════════════════════════════════
 // RESUME VIEWER FUNCTIONS
-// ══════════════════════════════════════════════════════════════
 
 async function viewResume() {
   if (!currentUser || !currentUser.has_resume) {
@@ -501,7 +486,6 @@ async function viewResume() {
       const resumeUrl = data.resume.file_url;
       const filename = data.resume.filename;
       
-      // Set modal title
       document.getElementById('resumeViewerTitle').textContent = filename;
       
       // Load resume in iframe
@@ -519,7 +503,6 @@ async function viewResume() {
         iframe.src = resumeUrl;
       }
       
-      // Show modal
       document.getElementById('resumeViewerOverlay').classList.add('open');
       document.body.style.overflow = 'hidden';
     } else {
@@ -534,7 +517,6 @@ function closeResumeViewer() {
   document.getElementById('resumeViewerOverlay').classList.remove('open');
   document.body.style.overflow = '';
   
-  // Clear iframe to stop loading
   const iframe = document.getElementById('resumeViewerFrame');
   iframe.src = 'about:blank';
 }
@@ -553,7 +535,6 @@ async function downloadResume() {
       const resumeUrl = data.resume.file_url;
       const filename = data.resume.filename;
       
-      // Create temporary link and trigger download
       const link = document.createElement('a');
       link.href = resumeUrl;
       link.download = filename;
@@ -601,9 +582,7 @@ async function deleteResume() {
   }
 }
 
-// ══════════════════════════════════════════════════════════════
 // MODAL FOR JOB DETAILS
-// ══════════════════════════════════════════════════════════════
 
 function openModal(index) {
   const job = recommendations[index];
@@ -616,7 +595,6 @@ function openModal(index) {
   const confInfo = `${job.confidence} Confidence · ${Math.round(job.score * 100)}% Match · Source: ${job.source}`;
   document.getElementById('modalConfidence').textContent = confInfo;
   
-  // Matched skills section
   const skillsEl = document.getElementById('modalMatchedSkills');
   if (job.matched_skills && job.matched_skills.length > 0) {
     skillsEl.innerHTML = job.matched_skills.map(skill =>
@@ -626,7 +604,6 @@ function openModal(index) {
     skillsEl.innerHTML = '<div class="empty-state">No specific skill matches available (ML-based prediction)</div>';
   }
   
-  // Roadmap section - fetch from JOB_PROFILES
   const roadmapEl = document.getElementById('modalRoadmap');
   const roadmap = getRoadmapForRole(job.role);
   
@@ -656,7 +633,6 @@ function openModal(index) {
 
 // Helper function to get roadmap from loaded profiles
 function getRoadmapForRole(roleName) {
-  // Return roadmap from loaded JOB_PROFILES
   return JOB_PROFILES[roleName] || null;
 }
 
@@ -670,9 +646,7 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') closeModal();
 });
 
-// ══════════════════════════════════════════════════════════════
 // UTILITY FUNCTIONS
-// ══════════════════════════════════════════════════════════════
 
 function showError(msg) {
   const toast = document.getElementById('errorToast');
@@ -692,9 +666,7 @@ function showSuccess(msg) {
   }, 3000);
 }
 
-// ══════════════════════════════════════════════════════════════
 // INITIALIZE ON PAGE LOAD
-// ══════════════════════════════════════════════════════════════
 
 // Load roadmaps first, then user info
 loadRoadmaps().then(() => {
@@ -707,11 +679,9 @@ window.addEventListener('DOMContentLoaded', () => {
   const tab = urlParams.get('tab');
   
   if (tab) {
-    // Remove active class from all tabs
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
     
-    // Activate the specified tab
     if (tab === 'upload') {
       document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
       document.getElementById('tab-upload').classList.add('active');

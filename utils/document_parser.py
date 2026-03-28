@@ -1,5 +1,5 @@
-import fitz  # PyMuPDF for PDF
-from docx import Document  # python-docx for DOCX
+import fitz  
+from docx import Document  
 import os
 import re, unicodedata
 
@@ -57,7 +57,6 @@ def extract_text_from_docx(file_stream) -> str:
                 if text:
                     full_text.append(text)
 
-    # Remove duplicates while preserving order
     seen = set()
     unique_text = []
     for line in full_text:
@@ -91,7 +90,6 @@ def extract_text_from_document(file_obj, filename: str) -> str:
             f"Only PDF and DOCX files are accepted."
         )
     
-    # Reset stream position to start
     file_obj.seek(0)
     
     try:
@@ -100,7 +98,6 @@ def extract_text_from_document(file_obj, filename: str) -> str:
         elif ext == '.docx':
             return extract_text_from_docx(file_obj)
         else:
-            # Should never reach here due to validation above
             raise ValueError(f"Unhandled extension: {ext}")
     
     except Exception as e:
@@ -117,10 +114,3 @@ def get_supported_formats_string() -> str:
     """Return a user-friendly string of supported formats."""
     return "PDF, DOCX"
 
-
-# if __name__ == "__main__":
-#     path = "D:\\yashveer_resume.pdf"
-#     with open(path, "rb") as f:
-#         result = extract_text_from_document(f, 'yashveer_resume.pdf')
-
-#     print(result)

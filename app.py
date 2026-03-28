@@ -8,8 +8,7 @@ import cloudinary.uploader
 import requests
 from io import BytesIO
 
-# Load environment variables from .env file
-load_dotenv()
+
 
 # Import database functions
 from utils.database import (
@@ -23,20 +22,19 @@ from utils.ats_scorer import compute_ats_score
 from utils.skill_extractor import extract_skills
 from utils.hybrid_recommender import get_top5_recommendations
 
+load_dotenv()
+
 app = Flask(__name__, 
             template_folder='frontend',
             static_folder='frontend/static')
 
-# ═══════════════════════════════════════════════════════════════
 # CONFIGURATION
-# ═══════════════════════════════════════════════════════════════
-
-# Secret key for session management (CHANGE THIS in production!)
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your-secret-key-change-this-in-production')
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
 # File upload configuration
-app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # 5MB max
+app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  
 app.config['ALLOWED_EXTENSIONS'] = {'.pdf', '.docx'}
+
 
 # Cloudinary configuration
 cloudinary.config(
@@ -45,10 +43,8 @@ cloudinary.config(
     api_secret=os.getenv("CLOUDINARY_API_SECRET")
 )
 
-# ═══════════════════════════════════════════════════════════════
-# AUTHENTICATION DECORATOR
-# ═══════════════════════════════════════════════════════════════
 
+# AUTHENTICATION DECORATOR
 def login_required(f):
     """Decorator to protect routes that require authentication."""
     @wraps(f)
@@ -58,10 +54,6 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-
-# ═══════════════════════════════════════════════════════════════
-# HELPER FUNCTIONS
-# ═══════════════════════════════════════════════════════════════
 
 def get_file_extension(filename):
     """Get file extension in lowercase with dot."""
@@ -78,15 +70,12 @@ def delete_old_resume_file(user_id):
                 resume["public_id"],
                 resource_type="raw"
             )
-            print(f"✅ Deleted old resume from Cloudinary: {resume['public_id']}")
+            print(f"Deleted old resume from Cloudinary: {resume['public_id']}")
         except Exception as e:
             print(f"⚠ Error deleting resume from Cloudinary: {e}")
 
 
-# ═══════════════════════════════════════════════════════════════
 # FRONTEND ROUTES (Serve HTML Pages)
-# ═══════════════════════════════════════════════════════════════
-
 @app.route('/')
 def index():
     """Landing page."""
@@ -128,9 +117,7 @@ def serve_data(filename):
     return send_from_directory('data', filename)
 
 
-# ═══════════════════════════════════════════════════════════════
 # AUTHENTICATION API ROUTES
-# ═══════════════════════════════════════════════════════════════
 
 @app.route('/api/signup', methods=['POST'])
 def api_signup():
@@ -141,14 +128,12 @@ def api_signup():
     email    = data.get('email', '').strip().lower()
     password = data.get('password', '').strip()
     
-    # Validation
     if not name or not email or not password:
         return jsonify({'error': 'All fields are required'}), 400
     
     if len(password) < 6:
         return jsonify({'error': 'Password must be at least 6 characters'}), 400
     
-    # Create user
     user = create_user(name, email, password)
     
     if user is None:
@@ -188,7 +173,6 @@ def api_login():
     if user is None:
         return jsonify({'error': 'Invalid email or password'}), 401
     
-    # Set session
     session['user_id']    = user['id']
     session['user_name']  = user['name']
     session['user_email'] = user['email']
@@ -238,9 +222,7 @@ def api_current_user():
     })
 
 
-# ═══════════════════════════════════════════════════════════════
 # RESUME UPLOAD & MANAGEMENT
-# ═══════════════════════════════════════════════════════════════
 
 @app.route('/api/upload-resume', methods=['POST'])
 @login_required
@@ -254,13 +236,11 @@ def api_upload_resume():
     if file.filename == '':
         return jsonify({'error': 'No file selected'}), 400
     
-    # Validate file type
     if not is_supported_format(file.filename):
         return jsonify({'error': 'Only PDF and DOCX files are accepted'}), 400
     
     user_id = session['user_id']
     
-    # Delete old resume from Cloudinary
     delete_old_resume_file(user_id)
     
     # Save new file to Cloudinary
@@ -280,11 +260,9 @@ def api_upload_resume():
     except Exception as e:
         return jsonify({'error': f'Failed to upload to Cloudinary: {str(e)}'}), 500
     
-    # Save to database (this will replace existing resume due to UNIQUE constraint)
     resume = save_resume(user_id, filename, file_url, public_id)
     
     if resume is None:
-        # Clean up Cloudinary if DB save failed
         try:
             cloudinary.uploader.destroy(public_id, resource_type="raw")
         except:
@@ -338,10 +316,7 @@ def api_delete_resume():
         return jsonify({'error': 'No resume to delete'}), 404
 
 
-# ═══════════════════════════════════════════════════════════════
 # RESUME ANALYSIS API (Protected Routes)
-# ═══════════════════════════════════════════════════════════════
-
 @app.route("/api/analyze", methods=["POST"])
 @login_required
 def api_analyze():
@@ -368,7 +343,6 @@ def api_analyze():
 
         file_stream = BytesIO(response.content)
 
-        # Extract text from downloaded file
         resume_text = extract_text_from_document(file_stream, resume_db['filename'])
 
     except Exception as e:
@@ -384,14 +358,12 @@ def api_suggest():
     """Job role suggestion using hybrid recommender (downloads resume from Cloudinary)."""
     user_id = session['user_id']
     
-    # Get user's uploaded resume
     resume_db = get_user_resume(user_id)
 
     if resume_db is None:
         return jsonify({"error": "No resume uploaded. Please upload your resume first."}), 400
 
     try:
-        # Download resume from Cloudinary URL
         response = requests.get(resume_db['file_path'], timeout=10)
 
         if response.status_code != 200:
@@ -399,19 +371,16 @@ def api_suggest():
 
         file_stream = BytesIO(response.content)
 
-        # Extract text from downloaded file
         resume_text = extract_text_from_document(file_stream, resume_db['filename'])
 
     except Exception as e:
         return jsonify({"error": f"Failed to read resume: {str(e)}"}), 500
 
-    # Get top 5 recommendations from hybrid system
     try:
         recommendations = get_top5_recommendations(resume_text)
     except Exception as e:
         return jsonify({"error": f"Prediction failed: {str(e)}"}), 500
 
-    # Also get skills for display
     resume_skills = extract_skills(resume_text)
 
     return jsonify({
@@ -421,9 +390,6 @@ def api_suggest():
     })
 
 
-# ═══════════════════════════════════════════════════════════════
-# RUN APP
-# ═══════════════════════════════════════════════════════════════
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000)

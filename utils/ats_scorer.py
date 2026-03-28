@@ -5,7 +5,6 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 
 
-# Initialize Gemini 2.5 Flash model
 def get_gemini_model():
     """Initialize and return Gemini 2.5 Flash model."""
     api_key = os.getenv("GEMINI_API_KEY")
@@ -67,35 +66,27 @@ def analyze_resume(resume_text: str, job_description: str) -> dict:
         dict: Complete ATS analysis with scores, keywords, and suggestions
     """
     try:
-        # Initialize model
         llm = get_gemini_model()
         
-        # Create prompt template
         prompt = ChatPromptTemplate.from_messages([
             ("system", SYSTEM_PROMPT),
             ("human", "=== RESUME ===\n{resume_text}\n\n=== JOB DESCRIPTION ===\n{job_description}")
         ])
         
-        # Create chain
         chain = prompt | llm
         
-        # Invoke with inputs
         response = chain.invoke({
             "resume_text": resume_text[:8000],  # Limit to 8k chars to avoid token limit
             "job_description": job_description[:3000]  # Limit JD to 3k chars
         })
         
-        # Extract content
         content = response.content
         
-        # Clean JSON response (remove markdown code blocks if present)
         content = re.sub(r'^```json\s*', '', content.strip())
         content = re.sub(r'\s*```$', '', content.strip())
         
-        # Parse JSON
         result = json.loads(content)
         
-        # Validate required fields
         required_fields = [
             "overall_score", "tone_style_score", "content_score", 
             "structure_score", "skills_score", "ats_score"
@@ -121,7 +112,6 @@ def analyze_resume(resume_text: str, job_description: str) -> dict:
                 "ats": []
             }
         
-        # Round scores to integers
         for key in required_fields:
             if isinstance(result[key], (int, float)):
                 result[key] = round(float(result[key]))
@@ -161,7 +151,6 @@ def get_fallback_response() -> dict:
     }
 
 
-# Backward compatibility with old function name
 def compute_ats_score(resume_text: str, job_description: str) -> dict:
     """
     Backward compatible wrapper for analyze_resume().

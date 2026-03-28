@@ -5,26 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login — ResumeIQ</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
     body {
       font-family: 'DM Sans', sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #141e30, #243b55);
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 24px;
+      color: #e0e6ed;
     }
     
     .auth-container {
-      background: white;
+      background: rgba(255,255,255,0.05);
       border-radius: 20px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
       max-width: 440px;
       width: 100%;
       padding: 48px 40px;
+      border: 1px solid rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
     }
     
     .logo {
@@ -36,14 +40,14 @@
       font-family: 'Syne', sans-serif;
       font-size: 32px;
       font-weight: 800;
-      background: linear-gradient(135deg, #667eea, #764ba2);
+      background: linear-gradient(135deg, #00c6ff, #4db8ff);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
     
     .logo p {
-      color: #666;
+      color: #aab6c4;
       font-size: 14px;
       margin-top: 8px;
     }
@@ -55,7 +59,7 @@
     label {
       display: block;
       font-weight: 500;
-      color: #333;
+      color: #e0e6ed;
       margin-bottom: 8px;
       font-size: 14px;
     }
@@ -63,16 +67,23 @@
     input {
       width: 100%;
       padding: 14px 16px;
-      border: 1px solid #ddd;
+      border: 1px solid rgba(255,255,255,0.15);
       border-radius: 10px;
       font-family: 'DM Sans', sans-serif;
       font-size: 15px;
-      transition: border-color 0.3s;
+      background: rgba(255,255,255,0.05);
+      color: #ffffff;
+      transition: border-color 0.3s, background 0.3s;
+    }
+    
+    input::placeholder {
+      color: #aab6c4;
     }
     
     input:focus {
       outline: none;
-      border-color: #667eea;
+      border-color: #00c6ff;
+      background: rgba(255,255,255,0.08);
     }
     
     .btn {
@@ -80,8 +91,8 @@
       padding: 16px;
       border: none;
       border-radius: 10px;
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      color: white;
+      background: linear-gradient(330deg, #4a9eff, #343a51);
+      color: #ffffff;
       font-family: 'Syne', sans-serif;
       font-size: 16px;
       font-weight: 700;
@@ -92,7 +103,7 @@
     
     .btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(102,126,234,0.4);
+      box-shadow: 0 8px 25px rgba(0,198,255,0.3);
     }
     
     .btn:disabled {
@@ -102,9 +113,9 @@
     }
     
     .error-box {
-      background: #fee;
-      border: 1px solid #fcc;
-      color: #c33;
+      background: rgba(255, 77, 77, 0.1);
+      border: 1px solid rgba(255, 77, 77, 0.3);
+      color: #ff6b6b;
       padding: 12px 16px;
       border-radius: 8px;
       margin-bottom: 20px;
@@ -119,12 +130,12 @@
     .footer-link {
       text-align: center;
       margin-top: 24px;
-      color: #666;
+      color: #aab6c4;
       font-size: 14px;
     }
     
     .footer-link a {
-      color: #667eea;
+      color: #4db8ff;
       text-decoration: none;
       font-weight: 600;
     }
@@ -139,7 +150,7 @@
     }
     
     .back-link a {
-      color: #667eea;
+      color: #4db8ff;
       text-decoration: none;
       font-size: 14px;
     }
@@ -149,6 +160,7 @@
     }
   </style>
 </head>
+
 <body>
   
   <div class="auth-container">

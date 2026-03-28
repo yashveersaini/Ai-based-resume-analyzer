@@ -24,7 +24,7 @@ def predict_job_role(txt, k):
     return top_k_labels, top_k_probs
 
 
-#  TRENDING ROLE MAP  (load from your JSON file)
+#  TRENDING ROLE MAP  
 
 with open('data/trending_role_map.json', 'r') as f:
     TRENDING_ROLE_MAP = json.load(f)
@@ -68,18 +68,12 @@ def _score_trending(cleaned_text: str) -> list[dict]:
                 "score":          final_score,
                 "source":         "Trending map",
                 "parent_category": parent,
-                "matched_skills": matched[:5],          # show top 5 evidence skills
+                "matched_skills": matched[:5],          
                 "confidence":     _confidence_label(final_score),
             })
 
     return sorted(results, key=lambda x: x["score"], reverse=True)
 
-
-# ──────────────────────────────────────────────────────────────
-# 6.  ML MODEL RESULTS → STRUCTURED FORMAT
-#     Wraps your existing predict_job_role into the same dict
-#     shape as trending results so the merger works cleanly.
-# ──────────────────────────────────────────────────────────────
 
 def _get_ml_predictions(cleaned_text: str, top_n: int = 5) -> list[dict]:
     """
@@ -100,24 +94,19 @@ def _get_ml_predictions(cleaned_text: str, top_n: int = 5) -> list[dict]:
             "role":            label,
             "score":           round(float(prob), 4),
             "source":          "ML model",
-            "parent_category": label,          # ML label IS the category
-            "matched_skills":  [],             # ML model has no skill evidence
+            "parent_category": label,          
+            "matched_skills":  [],             
             "confidence":      _confidence_label(float(prob)),
         })
 
     return results
 
 
-# ──────────────────────────────────────────────────────────────
-# 7.  SMART MERGE  — Dynamic split based on what fired
+#     SMART MERGE  - Dynamic split based on what fired
 #
 #     Scenario A  trending ≥ 2  →  top 3 trending + top 2 ML
 #     Scenario B  trending == 1 →  top 1 trending + top 4 ML
 #     Scenario C  trending == 0 →  top 5 ML only
-#
-#     After pooling: deduplicate by role name (keep highest
-#     score), then return the top 5.
-# ──────────────────────────────────────────────────────────────
 
 def _merge(trending_results: list[dict],
            ml_results:       list[dict]) -> list[dict]:
@@ -125,17 +114,12 @@ def _merge(trending_results: list[dict],
     t = len(trending_results)
 
     if t >= 2:
-        # Strong modern resume — trending dominates
         pool = trending_results[:3] + ml_results[:2]
     elif t == 1:
-        # One trending signal — blend
         pool = trending_results[:1] + ml_results[:4]
     else:
-        # Classic resume — ML only
         pool = ml_results[:3]
 
-    # Deduplicate: if the same role appears from both sources
-    # keep the entry with the higher score.
     seen: dict[str, dict] = {}
     for item in pool:
         key = item["role"].lower().strip()
@@ -145,10 +129,6 @@ def _merge(trending_results: list[dict],
     ranked = sorted(seen.values(), key=lambda x: x["score"], reverse=True)
     return ranked[:5]
 
-
-# ──────────────────────────────────────────────────────────────
-# 8.  PUBLIC API  — single function to call from your app
-# ──────────────────────────────────────────────────────────────
 
 def get_top5_recommendations(resume_text: str) -> list[dict]:
     """
@@ -182,10 +162,6 @@ def get_top5_recommendations(resume_text: str) -> list[dict]:
     return merged
 
 
-# ──────────────────────────────────────────────────────────────
-# 9.  DISPLAY HELPER  — clean terminal output for debugging
-# ──────────────────────────────────────────────────────────────
-
 def display_recommendations(results: list[dict]) -> None:
     """Pretty-prints the top 5 recommendations to terminal."""
     print("\n" + "=" * 58)
@@ -200,7 +176,7 @@ def display_recommendations(results: list[dict]) -> None:
     for r in results:
         tag  = source_tag.get(r["source"], "")
         conf = r["confidence"]
-        conf_bar = {"High": "███", "Medium": "██░", "Low": "█░░"}.get(conf, "")
+        conf_bar = {"High": "3", "Medium": "2", "Low": "1"}.get(conf, "")
 
         print(f"\n  #{r['rank']}  {r['role']}")
         print(f"      Source     : {r['source']}  {tag}")
@@ -216,13 +192,10 @@ def display_recommendations(results: list[dict]) -> None:
     print("\n" + "=" * 58 + "\n")
 
 
-# ──────────────────────────────────────────────────────────────
-# 10. EXAMPLE USAGE
-# ──────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
 
-    # ── Test 1: Modern AI resume (trending map should fire) ──
+    # Test 1
     resume_ai = """
     Experienced in building LLM applications using LangChain and LlamaIndex.
     Developed RAG pipelines with OpenAI GPT-4 and Gemini. Fine-tuned LLaMA
@@ -235,7 +208,7 @@ if __name__ == "__main__":
     results = get_top5_recommendations(resume_ai)
     display_recommendations(results)
 
-    # ── Test 2: Classic ML resume (ML model should dominate) ──
+    # Test 2:
     resume_classic = """
     Python developer with expertise in machine learning and deep learning.
     Proficient in pandas, numpy, scikit-learn, TensorFlow, and Keras.
@@ -248,7 +221,7 @@ if __name__ == "__main__":
     results = get_top5_recommendations(resume_classic)
     display_recommendations(results)
 
-    # ── Test 3: DevOps resume ──
+    # Test 3: 
     resume_devops = """
     DevOps engineer with 5 years of experience. Expert in Docker, Kubernetes,
     Helm, Terraform, and Ansible. CI/CD pipelines with Jenkins and GitHub

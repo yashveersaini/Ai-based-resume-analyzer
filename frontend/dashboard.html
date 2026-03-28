@@ -10,13 +10,13 @@
     
     body {
       font-family: 'DM Sans', sans-serif;
-      background: #f5f7fa;
+      background: linear-gradient(135deg, #141e30, #243b55);
       min-height: 100vh;
+      color: #ffffff;
     }
     
-    /* Header */
     header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #141e30, #243b55);
       color: white;
       padding: 20px 0;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
@@ -63,7 +63,6 @@
       background: rgba(255,255,255,0.3);
     }
     
-    /* Main Content */
     .container {
       max-width: 1200px;
       margin: 40px auto;
@@ -77,12 +76,12 @@
     .welcome h1 {
       font-family: 'Syne', sans-serif;
       font-size: 36px;
-      color: #333;
+      color: #ffffff;
       margin-bottom: 8px;
     }
     
     .welcome p {
-      color: #666;
+      color: #b8c6db;
       font-size: 16px;
     }
     
@@ -93,16 +92,18 @@
     }
     
     .card {
-      background: white;
+      background: #2b3e55;
       border-radius: 16px;
       padding: 28px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
       transition: transform 0.2s, box-shadow 0.2s;
+      color: #ffffff;
+      border: 1px solid rgba(255,255,255,0.1);
     }
     
     .card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
     }
     
     .card-icon {
@@ -114,11 +115,11 @@
       font-family: 'Syne', sans-serif;
       font-size: 22px;
       margin-bottom: 12px;
-      color: #333;
+      color: #ffffff;
     }
     
     .card p {
-      color: #666;
+      color: #b8c6db;
       margin-bottom: 20px;
       line-height: 1.6;
     }
@@ -137,7 +138,7 @@
     }
     
     .btn-primary {
-      background: linear-gradient(135deg, #667eea, #764ba2);
+      background: linear-gradient(330deg, #4a9eff, #343a51);
       color: white;
     }
     
@@ -147,19 +148,19 @@
     }
     
     .btn-outline {
-      background: white;
+      background: transparent;
       color: #667eea;
       border: 2px solid #667eea;
     }
     
     .btn-outline:hover {
-      background: #667eea;
+      background: linear-gradient(330deg, #4a9eff, #343a51);
       color: white;
     }
     
     .resume-info {
-      background: #f0f4ff;
-      border: 1px solid #d0dcf7;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
       border-radius: 12px;
       padding: 16px;
       margin-bottom: 20px;
@@ -177,21 +178,21 @@
     }
     
     .resume-info-label {
-      color: #666;
+      color: #b8c6db;
     }
     
     .resume-info-value {
       font-weight: 600;
-      color: #333;
+      color: #ffffff;
     }
     
     .no-resume {
-      background: #fff8e1;
-      border: 1px solid #ffe082;
+      background: rgba(255,193,7,0.1);
+      border: 1px solid rgba(255,193,7,0.3);
       border-radius: 12px;
       padding: 16px;
       margin-bottom: 20px;
-      color: #856404;
+      color: #ffcc80;
       font-size: 14px;
     }
   </style>
@@ -234,7 +235,7 @@
       <div class="card">
         <div class="card-icon">🎯</div>
         <h2>ATS Score Analysis</h2>
-        <p>Compare your resume against job descriptions and get instant compatibility scores.</p>
+        <p>Compare your resume against job descriptions and get instant compatibility scores and improvement suggestions.</p>
         <button class="btn btn-outline" id="atsAnalyzeBtn" onclick="goToATS()">Analyze Now</button>
       </div>
       
@@ -242,18 +243,28 @@
       <div class="card">
         <div class="card-icon">🤖</div>
         <h2>Job Role Prediction</h2>
-        <p>Our ML model predicts the top job roles that match your skills and experience.</p>
+        <p>Our Platform suggest you the top job roles that match your skills and experience.</p>
         <button class="btn btn-outline" id="jobSuggestBtn" onclick="goToJobSuggestions()">Get Suggestions</button>
       </div>
       
     </div>
   </div>
   
+  <footer>
+    <div class="container" style="
+      max-width: 1200px;
+      padding: 0 24px;
+      width: 100%;
+      text-align: center;
+      color: #AAB5C4;
+    ">
+      © 2025 ResumeIQ — Built with Python, Flask & PostgreSQL
+    </div>
+  </footer>
+
   <script>
-    // Global user state
     let currentUser = null;
     
-    // Fetch current user info
     async function loadUserInfo() {
       try {
         const response = await fetch('/api/current-user');
@@ -268,7 +279,6 @@
         
         document.getElementById('userName').textContent = currentUser.name;
         
-        // Update resume status
         const resumeStatus = document.getElementById('resumeStatus');
         
         if (currentUser.has_resume && currentUser.resume) {
@@ -292,54 +302,25 @@
           `;
         }
       } catch (error) {
-        console.error('Error loading user info:', error);
         window.location.href = '/login';
       }
     }
     
-    // Smart navigation to ATS tab
     function goToATS() {
-      if (!currentUser) {
-        window.location.href = '/upload';
-        return;
-      }
-      
-      if (currentUser.has_resume) {
-        // Resume exists - go directly to ATS tab
-        window.location.href = '/upload?tab=ats';
-      } else {
-        // No resume - go to upload tab first
-        window.location.href = '/upload?tab=upload';
-      }
+      if (!currentUser) return window.location.href = '/upload';
+      window.location.href = currentUser.has_resume ? '/upload?tab=ats' : '/upload?tab=upload';
     }
     
-    // Smart navigation to Job Suggestions tab
     function goToJobSuggestions() {
-      if (!currentUser) {
-        window.location.href = '/upload';
-        return;
-      }
-      
-      if (currentUser.has_resume) {
-        // Resume exists - go directly to Job Suggestions tab
-        window.location.href = '/upload?tab=suggest';
-      } else {
-        // No resume - go to upload tab first
-        window.location.href = '/upload?tab=upload';
-      }
+      if (!currentUser) return window.location.href = '/upload';
+      window.location.href = currentUser.has_resume ? '/upload?tab=suggest' : '/upload?tab=upload';
     }
     
     async function logout() {
-      try {
-        await fetch('/api/logout', { method: 'POST' });
-        window.location.href = '/';
-      } catch (error) {
-        console.error('Logout error:', error);
-        window.location.href = '/';
-      }
+      await fetch('/api/logout', { method: 'POST' });
+      window.location.href = '/';
     }
     
-    // Load on page load
     loadUserInfo();
   </script>
   

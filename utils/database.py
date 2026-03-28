@@ -5,13 +5,10 @@ from dotenv import load_dotenv
 import os
 from contextlib import contextmanager
 
-# ═══════════════════════════════════════════════════════════════
-# DATABASE CONNECTION POOL
-# ═══════════════════════════════════════════════════════════════
 
 load_dotenv()
 
-# Database configuration from environment variables (or hardcoded defaults)
+# Database configuration from environment variables 
 DB_CONFIG = {
     'host':     os.getenv('DB_HOST'),
     'database': os.getenv('DB_NAME'),
@@ -27,9 +24,9 @@ try:
         maxconn=10,
         **DB_CONFIG
     )
-    print("✅ PostgreSQL connection pool created successfully")
+    print("PostgreSQL connection pool created successfully")
 except Exception as e:
-    print(f"❌ Failed to create connection pool: {e}")
+    print(f"Failed to create connection pool: {e}")
     connection_pool = None
 
 
@@ -82,9 +79,7 @@ def get_db_cursor(commit=True):
             cursor.close()
 
 
-# ═══════════════════════════════════════════════════════════════
 # PASSWORD HASHING
-# ═══════════════════════════════════════════════════════════════
 
 def hash_password(password: str) -> str:
     """Hash a password using bcrypt."""
@@ -98,9 +93,7 @@ def verify_password(password: str, password_hash: str) -> bool:
     return bcrypt.checkpw(password.encode('utf-8'), password_hash.encode('utf-8'))
 
 
-# ═══════════════════════════════════════════════════════════════
 # USER AUTHENTICATION QUERIES
-# ═══════════════════════════════════════════════════════════════
 
 def create_user(name: str, email: str, password: str) -> dict:
     """
@@ -133,7 +126,6 @@ def create_user(name: str, email: str, password: str) -> dict:
             return None
     
     except psycopg2.errors.UniqueViolation:
-        # Email already exists
         return None
     except Exception as e:
         print(f"Error creating user: {e}")
@@ -223,9 +215,8 @@ def get_user_by_email(email: str) -> dict:
         return None
 
 
-# ═══════════════════════════════════════════════════════════════
 # RESUME MANAGEMENT QUERIES
-# ═══════════════════════════════════════════════════════════════
+
 def save_resume(user_id: int, filename: str, file_path: str, public_id: str) -> dict:
     """
     Save a resume for a user.
@@ -325,9 +316,7 @@ def delete_user_resume(user_id: int) -> bool:
         return False
 
 
-# ═══════════════════════════════════════════════════════════════
 # UTILITY QUERIES
-# ═══════════════════════════════════════════════════════════════
 
 def get_all_users():
     """Get all users (for admin/debugging)."""
@@ -355,4 +344,4 @@ def close_all_connections():
     """Close all database connections (call on app shutdown)."""
     if connection_pool:
         connection_pool.closeall()
-        print("✅ All database connections closed")
+        print("All database connections closed")

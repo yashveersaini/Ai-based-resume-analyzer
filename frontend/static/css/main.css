@@ -1,17 +1,19 @@
-/* ═══════════════════════════════════════════════════════════════
-   ResumeIQ — Main Stylesheet
-   frontend/static/css/main.css
-═══════════════════════════════════════════════════════════════ */
-
 :root {
-  --primary: #667eea;
-  --primary-dark: #5568d3;
-  --secondary: #764ba2;
-  --bg: #f5f7fa;
-  --surface: white;
-  --border: #e0e6ed;
-  --text: #333;
-  --text-muted: #666;
+  --primary: #4a9eff;
+  --primary-dark: #3a7fd5;
+  --secondary: #343a51;
+  --bg: linear-gradient(135deg, #141e30, #243b55);
+  --surface: rgba(255, 255, 255, 0.95);
+  --border: rgba(255, 255, 255, 0.1);
+
+  --text: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.6);
+
+  --card-text: #1a1a1a;
+  --card-text-muted: #555;
+
+  --text-light: rgba(255, 255, 255, 0.9);
+  --text-light-muted: rgba(255, 255, 255, 0.6);
   --success: #00c896;
   --warning: #ff9f43;
   --error: #ff6584;
@@ -26,17 +28,19 @@
 
 body {
   font-family: 'DM Sans', sans-serif;
-  background: var(--bg);
+  background: linear-gradient(135deg, #141e30, #243b55);
+  background-attachment: fixed;
   color: var(--text);
   min-height: 100vh;
 }
 
-/* ── Header ── */
 header {
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  background: rgba(20, 30, 48, 0.9);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   color: white;
   padding: 20px 0;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 nav {
@@ -52,6 +56,10 @@ nav {
   font-family: 'Syne', sans-serif;
   font-size: 24px;
   font-weight: 800;
+  background: linear-gradient(135deg, #4a9eff, #667eea);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .nav-right {
@@ -61,36 +69,38 @@ nav {
 }
 
 .nav-link {
-  color: white;
+  color: var(--text-light);
   text-decoration: none;
   font-weight: 500;
+  transition: color 0.3s;
 }
 
 .nav-link:hover {
-  text-decoration: underline;
+  color: var(--primary);
 }
 
 .user-name {
   font-weight: 600;
+  color: var(--text-light);
 }
 
 .btn-logout {
-  background: rgba(255,255,255,0.2);
-  border: 1px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
   color: white;
   padding: 8px 20px;
   border-radius: 8px;
   cursor: pointer;
   font-family: 'DM Sans', sans-serif;
   font-size: 14px;
-  transition: background 0.3s;
+  transition: all 0.3s;
 }
 
 .btn-logout:hover {
-  background: rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.2);
+  border-color: rgba(255,255,255,0.3);
 }
 
-/* ── Main Container ── */
 .container {
   max-width: 1000px;
   margin: 0 auto;
@@ -104,21 +114,21 @@ nav {
 .page-header h1 {
   font-family: 'Syne', sans-serif;
   font-size: 36px;
-  color: var(--text);
+  color: var(--text-light);
   margin-bottom: 8px;
 }
 
 .page-header p {
-  color: var(--text-muted);
+  color: var(--text-light-muted);
   font-size: 16px;
 }
 
-/* ── Tabs ── */
 .tabs {
   display: flex;
   gap: 8px;
-  background: white;
-  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   padding: 6px;
   margin-bottom: 32px;
@@ -130,7 +140,7 @@ nav {
   border: none;
   border-radius: 8px;
   background: transparent;
-  color: var(--text-muted);
+  color: var(--text-light-muted);
   font-family: 'DM Sans', sans-serif;
   font-size: 15px;
   font-weight: 600;
@@ -138,9 +148,15 @@ nav {
   transition: all 0.3s;
 }
 
+.tab-btn:hover {
+  color: var(--text-light);
+  background: rgba(255, 255, 255, 0.05);
+}
+
 .tab-btn.active {
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  background: linear-gradient(330deg, var(--primary), var(--secondary));
   color: white;
+  box-shadow: 0 4px 12px rgba(74, 158, 255, 0.3);
 }
 
 .tab-content {
@@ -157,46 +173,48 @@ nav {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Cards ── */
 .card {
-  background: white;
-  border: 1px solid var(--border);
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius);
   padding: 28px;
   margin-bottom: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  color: var(--card-text);
 }
 
 .card-title {
   font-family: 'Syne', sans-serif;
   font-size: 18px;
   font-weight: 700;
-  color: var(--text);
+  color: var(--card-text);
   margin-bottom: 16px;
 }
 
 .hint-text {
-  color: var(--text-muted);
+  color: var(--card-text-muted);
   font-size: 14px;
   margin-bottom: 20px;
 }
 
-/* ── Upload Zone ── */
 .upload-zone {
-  border: 2px dashed var(--border);
+  border: 2px dashed rgba(255, 255, 255, 0.2);
   border-radius: 12px;
   padding: 40px 20px;
   text-align: center;
   cursor: pointer;
   transition: all 0.3s;
   position: relative;
-  background: #fafbfc;
+  background: rgba(255, 255, 255, 0.03);
   margin-bottom: 20px;
 }
 
 .upload-zone:hover,
 .upload-zone.drag-over {
   border-color: var(--primary);
-  background: #f0f4ff;
+  background: rgba(74, 158, 255, 0.05);
+  box-shadow: 0 4px 20px rgba(74, 158, 255, 0.1);
 }
 
 .upload-zone input[type="file"] {
@@ -216,13 +234,13 @@ nav {
 .upload-text {
   font-size: 16px;
   font-weight: 600;
-  color: var(--text);
+  color: var(--card-text);
   margin-bottom: 6px;
 }
 
 .upload-hint {
   font-size: 14px;
-  color: var(--text-muted);
+  color: var(--card-text-muted);
 }
 
 .upload-file-name {
@@ -233,10 +251,9 @@ nav {
   display: none;
 }
 
-/* ── Resume Info Box ── */
 .resume-info-box {
-  background: #f0f4ff;
-  border: 1px solid #d0dcf7;
+  background: rgba(74, 158, 255, 0.08);
+  border: 1px solid rgba(74, 158, 255, 0.2);
   border-radius: 12px;
   padding: 20px;
 }
@@ -253,29 +270,28 @@ nav {
 }
 
 .resume-info-label {
-  color: var(--text-muted);
+  color: var(--card-text-muted);
 }
 
 .resume-info-value {
   font-weight: 600;
-  color: var(--text);
+  color: var(--card-text);
 }
 
 .no-resume-box {
-  background: #fff8e1;
-  border: 1px solid #ffe082;
+  background: rgba(255, 159, 67, 0.1);
+  border: 1px solid rgba(255, 159, 67, 0.3);
   border-radius: 12px;
   padding: 20px;
-  color: #856404;
+  color: var(--warning);
 }
 
 .loading {
   text-align: center;
-  color: var(--text-muted);
+  color: var(--card-text-muted);
   padding: 20px;
 }
 
-/* ── Buttons ── */
 .btn {
   padding: 14px 28px;
   border-radius: 10px;
@@ -290,13 +306,14 @@ nav {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  background: linear-gradient(330deg, var(--primary), var(--secondary));
   color: white;
+  box-shadow: 0 4px 12px rgba(74, 158, 255, 0.3);
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(102,126,234,0.3);
+  box-shadow: 0 8px 25px rgba(74, 158, 255, 0.4);
 }
 
 .btn-primary:disabled {
@@ -305,12 +322,22 @@ nav {
   transform: none;
 }
 
-/* ── Textarea ── */
+.btn-outline {
+  background: transparent;
+  color: var(--primary);
+  border: 2px solid var(--primary);
+}
+
+.btn-outline:hover {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+}
+
 textarea {
   width: 100%;
   min-height: 180px;
-  background: #fafbfc;
-  border: 1px solid var(--border);
+  background: #fcfcfcf6;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
   padding: 16px;
   font-family: 'DM Sans', sans-serif;
@@ -318,14 +345,20 @@ textarea {
   line-height: 1.6;
   resize: vertical;
   margin-bottom: 20px;
+  color: #110202;
 }
 
 textarea:focus {
   outline: none;
   border-color: var(--primary);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 3px rgba(74, 158, 255, 0.1);
 }
 
-/* ── Loader ── */
+textarea::placeholder {
+  color: #110202;
+}
+
 .loader {
   display: none;
   flex-direction: column;
@@ -348,7 +381,7 @@ textarea:focus {
 }
 
 .loader-text {
-  color: var(--text-muted);
+  color: var(--text-light-muted);
   font-size: 14px;
 }
 
@@ -356,7 +389,6 @@ textarea:focus {
   to { transform: rotate(360deg); }
 }
 
-/* ── Results Section ── */
 .results-section {
   display: none;
   margin-top: 32px;
@@ -372,10 +404,9 @@ textarea:focus {
   font-size: 20px;
   font-weight: 700;
   margin-bottom: 16px;
-  color: var(--text);
+  color: var(--text-light);
 }
 
-/* ── Score Ring ── */
 .score-container {
   display: flex;
   align-items: center;
@@ -434,14 +465,14 @@ textarea:focus {
   font-size: 22px;
   font-weight: 700;
   margin-bottom: 8px;
+  color: var(--card-text);
 }
 
 .score-desc {
-  color: var(--text-muted);
+  color: var(--card-text-muted);
   line-height: 1.6;
 }
 
-/* ── Skills Grid ── */
 .skills-grid {
   display: flex;
   flex-wrap: wrap;
@@ -479,17 +510,16 @@ textarea:focus {
 
 .empty-state {
   text-align: center;
-  color: var(--text-muted);
+  color: var(--card-text-muted);
   font-size: 14px;
   font-style: italic;
   width: 100%;
   padding: 20px;
 }
 
-/* ── Job Cards ── */
 .job-card {
   background: white;
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius);
   padding: 24px;
   margin-bottom: 16px;
@@ -498,12 +528,13 @@ textarea:focus {
   gap: 20px;
   cursor: pointer;
   transition: all 0.3s;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
 .job-card:hover {
   border-color: var(--primary);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 8px 32px rgba(74, 158, 255, 0.2);
 }
 
 .job-rank {
@@ -520,6 +551,7 @@ textarea:focus {
   font-size: 20px;
   font-weight: 700;
   margin-bottom: 8px;
+  color: #1a1a1a;
 }
 
 .job-meta {
@@ -587,7 +619,7 @@ textarea:focus {
 
 .matched-preview {
   font-size: 13px;
-  color: var(--text-muted);
+  color: #666;
   font-family: 'DM Mono', monospace;
   margin-top: 6px;
 }
@@ -596,7 +628,7 @@ textarea:focus {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.7);
+  background: rgba(0,0,0,0.85);
   backdrop-filter: blur(6px);
   z-index: 1000;
   display: flex;
@@ -622,9 +654,9 @@ textarea:focus {
   overflow-y: auto;
   padding: 32px;
   position: relative;
+  color: #1a1a1a; 
 }
 
-/* ── Resume Viewer Modal (Larger) ── */
 .resume-viewer-modal {
   max-width: 900px;
   max-height: 90vh;
@@ -656,7 +688,7 @@ textarea:focus {
   gap: 12px;
   justify-content: flex-end;
   padding-top: 16px;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid rgba(0,0,0,0.1);
 }
 
 .modal-close {
@@ -692,10 +724,11 @@ textarea:focus {
   font-size: 28px;
   font-weight: 800;
   margin-bottom: 8px;
+  color: #1a1a1a;
 }
 
 .modal-confidence {
-  color: var(--text-muted);
+  color: #666;
   font-size: 14px;
 }
 
@@ -708,6 +741,7 @@ textarea:focus {
   font-size: 16px;
   font-weight: 700;
   margin-bottom: 12px;
+  color: #1a1a1a;
 }
 
 .roadmap {
@@ -741,21 +775,21 @@ textarea:focus {
 .step-title {
   font-weight: 700;
   margin-bottom: 4px;
+  color: #1a1a1a;
 }
 
 .step-desc {
-  color: var(--text-muted);
+  color: #555;
   font-size: 14px;
   line-height: 1.6;
 }
 
-/* ── No Roadmap Message ── */
 .no-roadmap-message {
   text-align: center;
   padding: 40px 20px;
-  background: #f8f9fa;
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 12px;
-  border: 1px dashed var(--border);
+  border: 1px dashed rgba(255, 255, 255, 0.1);
 }
 
 .no-roadmap-icon {
@@ -767,16 +801,15 @@ textarea:focus {
 .no-roadmap-text {
   font-size: 16px;
   font-weight: 600;
-  color: var(--text);
+  color: var(--text-light);
   margin-bottom: 8px;
 }
 
 .no-roadmap-hint {
   font-size: 14px;
-  color: var(--text-muted);
+  color: var(--text-light-muted);
 }
 
-/* ── Category Scores ── */
 .category-scores-container {
   display: flex;
   flex-direction: column;
@@ -803,13 +836,13 @@ textarea:focus {
 .category-label {
   font-size: 14px;
   font-weight: 600;
-  color: var(--text);
+  color: var(--card-text);
 }
 
 .category-score-bar {
   flex: 1;
   height: 12px;
-  background: var(--border);
+  background: rgba(0, 0, 0, 0.08);
   border-radius: 6px;
   overflow: hidden;
 }
@@ -837,10 +870,9 @@ textarea:focus {
   text-align: right;
   font-weight: 700;
   font-size: 14px;
-  color: var(--text);
+  color: var(--card-text);
 }
 
-/* ── Keywords List ── */
 .keywords-list {
   display: flex;
   flex-wrap: wrap;
@@ -857,7 +889,6 @@ textarea:focus {
   font-weight: 500;
 }
 
-/* ── Improvements Section ── */
 .improvement-section {
   margin-bottom: 20px;
 }
@@ -880,7 +911,7 @@ textarea:focus {
 .improvement-title {
   font-weight: 700;
   font-size: 16px;
-  color: var(--text);
+  color: #1a1a1a;
 }
 
 .improvement-list {
@@ -893,7 +924,7 @@ textarea:focus {
   padding: 8px 0 8px 24px;
   position: relative;
   line-height: 1.6;
-  color: var(--text-muted);
+  color: #555;
 }
 
 .improvement-list li:before {
@@ -904,7 +935,6 @@ textarea:focus {
   font-weight: 700;
 }
 
-/* ── Error Toast ── */
 .error-toast {
   position: fixed;
   bottom: 24px;
@@ -913,7 +943,7 @@ textarea:focus {
   color: white;
   padding: 16px 24px;
   border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
   font-weight: 600;
   display: none;
   z-index: 2000;
@@ -929,7 +959,6 @@ textarea:focus {
   to { transform: translateY(0); opacity: 1; }
 }
 
-/* ── Responsive ── */
 @media (max-width: 768px) {
   .score-container {
     flex-direction: column;
