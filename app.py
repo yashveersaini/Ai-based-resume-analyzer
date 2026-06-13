@@ -7,6 +7,7 @@ import cloudinary
 import cloudinary.uploader
 import requests
 from io import BytesIO
+from utils.database import create_tables
 
 
 
@@ -23,6 +24,8 @@ from utils.skill_extractor import extract_skills
 from utils.hybrid_recommender import get_top5_recommendations
 
 load_dotenv()
+
+create_tables()
 
 app = Flask(__name__, 
             template_folder='frontend',

@@ -9,27 +9,58 @@ from contextlib import contextmanager
 load_dotenv()
 
 # Database configuration from environment variables 
-DB_CONFIG = {
-    'host':     os.getenv('DB_HOST'),
-    'database': os.getenv('DB_NAME'),
-    'user':     os.getenv('DB_USER'),
-    'password': os.getenv('DB_PASSWORD'),
-    'port':     os.getenv('DB_PORT')
-}
+
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 # Create connection pool (min 1, max 10 connections)
 try:
     connection_pool = psycopg2.pool.SimpleConnectionPool(
         minconn=1,
         maxconn=10,
-        **DB_CONFIG
+        dsn=DATABASE_URL
     )
+    
     print("PostgreSQL connection pool created successfully")
 except Exception as e:
     print(f"Failed to create connection pool: {e}")
     connection_pool = None
 
 
+def create_tables():
+    """Create database tables if they don't exist."""
+    
+    users_table = """
+    CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
+        email VARCHAR(255) UNIQUE NOT NULL,
+        password_hash TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+    """
+
+    resumes_table = """
+    CREATE TABLE IF NOT EXISTS resumes (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+        filename TEXT NOT NULL,
+        file_path TEXT NOT NULL,
+        public_id TEXT NOT NULL,
+        uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+    """
+
+    try:
+        with get_db_cursor() as cursor:
+            cursor.execute(users_table)
+            cursor.execute(resumes_table)
+
+        print("Tables created successfully")
+
+    except Exception as e:
+        print(f"Error creating tables: {e}")
+
+        
 @contextmanager
 def get_db_connection():
     """
