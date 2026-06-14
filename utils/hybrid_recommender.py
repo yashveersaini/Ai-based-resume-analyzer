@@ -14,15 +14,6 @@ clf            = pickle.load(open(os.path.join(MODEL_DIR, 'clf_logistics.pkl'), 
 label_encoder  = pickle.load(open(os.path.join(MODEL_DIR, 'label_encoder.pkl'), 'rb'))
 
 
-def predict_job_role(txt, k):
-    my_resume       = cleanResume(txt)
-    input_features  = tfidf.transform([my_resume])
-    prediction_prob = clf.predict_proba(input_features)
-    top_k_idx       = prediction_prob.argsort()[:, -k:][:, ::-1]
-    top_k_labels    = [label_encoder.inverse_transform(row) for row in top_k_idx]
-    top_k_probs     = np.take_along_axis(prediction_prob, top_k_idx, axis=1)
-    return top_k_labels, top_k_probs
-
 
 #  TRENDING ROLE MAP  
 
