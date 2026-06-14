@@ -18,10 +18,6 @@ joblib==1.4.2
 pandas==2.2.3
 numpy==2.2.3
 
-# PyTorch (CPU build — use this on Render free/standard tier)
-torch==2.9.0
-
 # LangChain & Google AI
 langchain==0.3.25
-langchain-google-genai==2.1.4
-google-generativeai==0.8.3
+langchain-google-genai==2.0.8
