@@ -85,6 +85,11 @@ def index():
     return render_template('index.html')
 
 
+@app.route("/health")
+def health():
+    return {"status": "ok"}
+
+
 @app.route('/login')
 def login_page():
     """Login page."""
