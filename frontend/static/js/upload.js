@@ -80,12 +80,7 @@ function displayResumeInfo() {
 
 // ── Logout ──
 async function logout() {
-  try {
-    await fetch('/api/logout', { method: 'POST' });
-    window.location.href = '/';
-  } catch (error) {
-    window.location.href = '/';
-  }
+  await clerkLogout();
 }
 
 // ── Tab Switching ──

@@ -5,6 +5,7 @@ python-dotenv==1.0.1
 psycopg2-binary==2.9.10
 
 # Auth & Cloud
+clerk-backend-api==3.3.0
 bcrypt==4.2.1
 cloudinary==1.44.0
 requests==2.32.3

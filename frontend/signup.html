@@ -29,7 +29,12 @@
       padding: 48px 40px;
       border: 1px solid rgba(255,255,255,0.1);
       backdrop-filter: blur(10px);
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;   
     }
+
     
     .logo {
       text-align: center;
@@ -52,98 +57,6 @@
       margin-top: 8px;
     }
     
-    .form-group {
-      margin-bottom: 20px;
-    }
-    
-    label {
-      display: block;
-      font-weight: 500;
-      color: #e0e6ed;
-      margin-bottom: 8px;
-      font-size: 14px;
-    }
-    
-    input {
-      width: 100%;
-      padding: 14px 16px;
-      border: 1px solid rgba(255,255,255,0.15);
-      border-radius: 10px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 15px;
-      background: rgba(255,255,255,0.05);
-      color: #ffffff;
-      transition: border-color 0.3s, background 0.3s;
-    }
-    
-    input::placeholder {
-      color: #aab6c4;
-    }
-    
-    input:focus {
-      outline: none;
-      border-color: #00c6ff;
-      background: rgba(255,255,255,0.08);
-    }
-    
-    .btn {
-      width: 100%;
-      padding: 16px;
-      border: none;
-      border-radius: 10px;
-      background: linear-gradient(330deg, #4a9eff, #343a51);
-      color: #ffffff;
-      font-family: 'Syne', sans-serif;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: transform 0.2s;
-      margin-top: 8px;
-    }
-    
-    .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(0,198,255,0.3);
-    }
-    
-    .btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
-    
-    .error-box {
-      background: rgba(255, 77, 77, 0.1);
-      border: 1px solid rgba(255, 77, 77, 0.3);
-      color: #ff6b6b;
-      padding: 12px 16px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      font-size: 14px;
-      display: none;
-    }
-    
-    .error-box.visible {
-      display: block;
-    }
-    
-    .footer-link {
-      text-align: center;
-      margin-top: 24px;
-      color: #aab6c4;
-      font-size: 14px;
-    }
-    
-    .footer-link a {
-      color: #4db8ff;
-      text-decoration: none;
-      font-weight: 600;
-    }
-    
-    .footer-link a:hover {
-      text-decoration: underline;
-    }
-    
     .back-link {
       text-align: center;
       margin-bottom: 20px;
@@ -158,11 +71,25 @@
     .back-link a:hover {
       text-decoration: underline;
     }
-    
-    .password-hint {
-      font-size: 12px;
-      color: #aab6c4;
-      margin-top: 4px;
+
+    .error-box {
+      background: rgba(255, 77, 77, 0.1);
+      border: 1px solid rgba(255, 77, 77, 0.3);
+      color: #ff6b6b;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      display: none;
+    }
+
+    .error-box.visible {
+      display: block;
+    }
+
+    #clerk-sign-up {
+      display: flex;
+      justify-content: center;
     }
   </style>
 </head>
@@ -178,87 +105,37 @@
       <h1>ResumeIQ</h1>
       <p>Create your account</p>
     </div>
-    
+
     <div class="error-box" id="errorBox"></div>
-    
-    <form id="signupForm">
-      <div class="form-group">
-        <label for="name">Full Name</label>
-        <input type="text" id="name" name="name" required autocomplete="name">
-      </div>
-      
-      <div class="form-group">
-        <label for="email">Email Address</label>
-        <input type="email" id="email" name="email" required autocomplete="email">
-      </div>
-      
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" required autocomplete="new-password" minlength="6">
-        <div class="password-hint">Minimum 6 characters</div>
-      </div>
-      
-      <button type="submit" class="btn" id="submitBtn">Create Account</button>
-    </form>
-    
-    <div class="footer-link">
-      Already have an account? <a href="/login">Login</a>
-    </div>
+    <div id="clerk-sign-up"></div>
   </div>
-  
+
+  <script src="/static/js/clerk-auth.js"></script>
   <script>
-    const form = document.getElementById('signupForm');
     const errorBox = document.getElementById('errorBox');
-    const submitBtn = document.getElementById('submitBtn');
-    
-    function showError(msg) {
-      errorBox.textContent = msg;
+
+    function showError(message) {
+      errorBox.textContent = message;
       errorBox.classList.add('visible');
     }
-    
-    function hideError() {
-      errorBox.classList.remove('visible');
-    }
-    
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      hideError();
-      
-      const formData = new FormData(form);
-      const data = {
-        name: formData.get('name'),
-        email: formData.get('email'),
-        password: formData.get('password')
-      };
-      
-      if (data.password.length < 6) {
-        showError('Password must be at least 6 characters');
-        return;
-      }
-      
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Creating Account...';
-      
+
+    window.addEventListener('load', async () => {
       try {
-        const response = await fetch('/api/signup', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
-        });
-        
-        const result = await response.json();
-        
-        if (response.ok && result.success) {
+        const clerk = await initClerk();
+
+        if (clerk.isSignedIn) {
+          await syncBackendSession();
           window.location.href = '/dashboard';
-        } else {
-          showError(result.error || 'Signup failed');
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Create Account';
+          return;
         }
+
+        clerk.mountSignUp(document.getElementById('clerk-sign-up'), {
+          signInUrl: '/login',
+          forceRedirectUrl: '/dashboard',
+          fallbackRedirectUrl: '/dashboard',
+        });
       } catch (error) {
-        showError('Network error. Please try again.');
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Create Account';
+        showError('Unable to load sign up. Check Clerk configuration.');
       }
     });
   </script>

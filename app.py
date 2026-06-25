@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for
-from functools import wraps
 import os
 from dotenv import load_dotenv
 from werkzeug.utils import secure_filename
@@ -13,9 +12,10 @@ from utils.database import create_tables
 
 # Import database functions
 from utils.database import (
-    create_user, authenticate_user, get_user_by_id,
+    get_user_by_id,
     save_resume, get_user_resume, delete_user_resume
 )
+from utils.clerk_auth import init_clerk_config, login_required, page_login_required, resolve_session_user
 
 # Import resume analysis functions
 from utils.document_parser import extract_text_from_document, is_supported_format
@@ -33,6 +33,7 @@ app = Flask(__name__,
 
 # CONFIGURATION
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+init_clerk_config(app)
 
 # File upload configuration
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  
@@ -47,15 +48,12 @@ cloudinary.config(
 )
 
 
-# AUTHENTICATION DECORATOR
-def login_required(f):
-    """Decorator to protect routes that require authentication."""
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'user_id' not in session:
-            return jsonify({'error': 'Authentication required'}), 401
-        return f(*args, **kwargs)
-    return decorated_function
+@app.context_processor
+def inject_clerk_config():
+    return {
+        'clerk_publishable_key': os.getenv('CLERK_PUBLISHABLE_KEY', ''),
+        'clerk_frontend_api': os.getenv('CLERK_FRONTEND_API', ''),
+    }
 
 
 def get_file_extension(filename):
@@ -105,16 +103,18 @@ def signup_page():
 @app.route('/dashboard')
 def dashboard_page():
     """Dashboard page (requires login)."""
-    if 'user_id' not in session:
-        return redirect(url_for('login_page'))
+    auth_redirect = page_login_required()
+    if auth_redirect:
+        return auth_redirect
     return render_template('dashboard.html')
 
 
 @app.route('/upload')
 def upload_page():
     """Resume upload & analysis page (requires login)."""
-    if 'user_id' not in session:
-        return redirect(url_for('login_page'))
+    auth_redirect = page_login_required()
+    if auth_redirect:
+        return auth_redirect
     return render_template('upload.html')
 
 
@@ -127,71 +127,33 @@ def serve_data(filename):
 
 # AUTHENTICATION API ROUTES
 
-@app.route('/api/signup', methods=['POST'])
-def api_signup():
-    """Handle user registration."""
-    data = request.get_json()
-    
-    name     = data.get('name', '').strip()
-    email    = data.get('email', '').strip().lower()
-    password = data.get('password', '').strip()
-    
-    if not name or not email or not password:
-        return jsonify({'error': 'All fields are required'}), 400
-    
-    if len(password) < 6:
-        return jsonify({'error': 'Password must be at least 6 characters'}), 400
-    
-    user = create_user(name, email, password)
-    
-    if user is None:
-        return jsonify({'error': 'Email already exists'}), 409
-    
-    # Auto-login after signup
-    session['user_id']   = user['id']
-    session['user_name'] = user['name']
-    session['user_email'] = user['email']
-    
+@app.route('/api/clerk-config')
+def api_clerk_config():
+    """Expose Clerk frontend configuration to the browser."""
     return jsonify({
-        'success': True,
-        'message': 'Account created successfully',
-        'user': {
-            'id':    user['id'],
-            'name':  user['name'],
-            'email': user['email']
-        }
-    }), 201
+        'publishableKey': os.getenv('CLERK_PUBLISHABLE_KEY', ''),
+        'frontendApi': os.getenv('CLERK_FRONTEND_API', ''),
+    })
 
 
-@app.route('/api/login', methods=['POST'])
-def api_login():
-    """Handle user login."""
-    data = request.get_json()
-    
-    email    = data.get('email', '').strip().lower()
-    password = data.get('password', '').strip()
-    
-    # Validation
-    if not email or not password:
-        return jsonify({'error': 'Email and password are required'}), 400
-    
-    # Authenticate
-    user = authenticate_user(email, password)
-    
+@app.route('/api/auth/sync', methods=['POST'])
+def api_auth_sync():
+    """Sync a verified Clerk session to the local Flask session."""
+    user_id = resolve_session_user()
+    if user_id is None:
+        return jsonify({'error': 'Authentication required'}), 401
+
+    user = get_user_by_id(user_id)
     if user is None:
-        return jsonify({'error': 'Invalid email or password'}), 401
-    
-    session['user_id']    = user['id']
-    session['user_name']  = user['name']
-    session['user_email'] = user['email']
-    
+        session.clear()
+        return jsonify({'error': 'User not found'}), 404
+
     return jsonify({
         'success': True,
-        'message': 'Login successful',
         'user': {
-            'id':    user['id'],
-            'name':  user['name'],
-            'email': user['email']
+            'id': user['id'],
+            'name': user['name'],
+            'email': user['email'],
         }
     })
 
@@ -400,4 +362,4 @@ def api_suggest():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=False, host='0.0.0.0', port=5000)

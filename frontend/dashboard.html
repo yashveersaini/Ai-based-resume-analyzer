@@ -262,6 +262,7 @@
     </div>
   </footer>
 
+  <script src="/static/js/clerk-auth.js"></script>
   <script>
     let currentUser = null;
     
@@ -317,8 +318,7 @@
     }
     
     async function logout() {
-      await fetch('/api/logout', { method: 'POST' });
-      window.location.href = '/';
+      await clerkLogout();
     }
     
     loadUserInfo();

@@ -26,6 +26,9 @@ except Exception as e:
     connection_pool = None
 
 
+CLERK_MANAGED_PASSWORD = "clerk_managed"
+
+
 def create_tables():
     """Create database tables if they don't exist."""
     
@@ -35,6 +38,7 @@ def create_tables():
         name VARCHAR(100) NOT NULL,
         email VARCHAR(255) UNIQUE NOT NULL,
         password_hash TEXT NOT NULL,
+        clerk_id VARCHAR(255) UNIQUE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
     """
@@ -54,6 +58,9 @@ def create_tables():
         with get_db_cursor() as cursor:
             cursor.execute(users_table)
             cursor.execute(resumes_table)
+            cursor.execute(
+                "ALTER TABLE users ADD COLUMN IF NOT EXISTS clerk_id VARCHAR(255) UNIQUE"
+            )
 
         print("Tables created successfully")
 
@@ -244,6 +251,91 @@ def get_user_by_email(email: str) -> dict:
     except Exception as e:
         print(f"Error getting user: {e}")
         return None
+
+
+def get_user_by_clerk_id(clerk_id: str) -> dict | None:
+    """Get user information by Clerk user ID."""
+    try:
+        with get_db_cursor(commit=False) as cursor:
+            cursor.execute(
+                "SELECT id, name, email, created_at FROM users WHERE clerk_id = %s",
+                (clerk_id,),
+            )
+            result = cursor.fetchone()
+
+            if result:
+                return {
+                    "id": result[0],
+                    "name": result[1],
+                    "email": result[2],
+                    "created_at": result[3],
+                }
+            return None
+
+    except Exception as e:
+        print(f"Error getting user by clerk_id: {e}")
+        return None
+
+
+def get_or_create_user_from_clerk(clerk_id: str, name: str, email: str) -> dict | None:
+    """Find or create a local user linked to a Clerk account."""
+    user = get_user_by_clerk_id(clerk_id)
+    if user:
+        return user
+
+    normalized_email = email.strip().lower()
+    if not normalized_email:
+        return None
+
+    existing = get_user_by_email(normalized_email)
+    if existing:
+        try:
+            with get_db_cursor() as cursor:
+                cursor.execute(
+                    """
+                    UPDATE users
+                    SET clerk_id = %s, name = %s
+                    WHERE id = %s
+                    RETURNING id, name, email, created_at
+                    """,
+                    (clerk_id, name, existing["id"]),
+                )
+                result = cursor.fetchone()
+                if result:
+                    return {
+                        "id": result[0],
+                        "name": result[1],
+                        "email": result[2],
+                        "created_at": result[3],
+                    }
+        except Exception as e:
+            print(f"Error linking Clerk user: {e}")
+            return None
+
+    try:
+        with get_db_cursor() as cursor:
+            cursor.execute(
+                """
+                INSERT INTO users (name, email, password_hash, clerk_id)
+                VALUES (%s, %s, %s, %s)
+                RETURNING id, name, email, created_at
+                """,
+                (name, normalized_email, CLERK_MANAGED_PASSWORD, clerk_id),
+            )
+            result = cursor.fetchone()
+            if result:
+                return {
+                    "id": result[0],
+                    "name": result[1],
+                    "email": result[2],
+                    "created_at": result[3],
+                }
+    except psycopg2.errors.UniqueViolation:
+        return get_user_by_clerk_id(clerk_id) or get_user_by_email(normalized_email)
+    except Exception as e:
+        print(f"Error creating Clerk user: {e}")
+
+    return None
 
 
 # RESUME MANAGEMENT QUERIES
